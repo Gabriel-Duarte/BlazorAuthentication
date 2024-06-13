@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorAuthentication", "BlazorAuthentication\BlazorAuthentication.csproj", "{820A56BB-BE03-4343-AE63-455323703EA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorAuthentication", "BlazorAuthentication\BlazorAuthentication.csproj", "{820A56BB-BE03-4343-AE63-455323703EA8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorAuthentication.Client", "BlazorAuthentication.Client\BlazorAuthentication.Client.csproj", "{C819F501-F599-4B6A-BF95-62A827B359CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorAuthentication.Client", "BlazorAuthentication.Client\BlazorAuthentication.Client.csproj", "{C819F501-F599-4B6A-BF95-62A827B359CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

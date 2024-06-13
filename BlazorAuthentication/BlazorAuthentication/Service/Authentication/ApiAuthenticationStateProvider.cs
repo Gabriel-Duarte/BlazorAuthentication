@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace BlazorAuthentication.Service.Authentication
 {
@@ -30,8 +31,18 @@ namespace BlazorAuthentication.Service.Authentication
 
             var token = AllCockies.Where(x => x.Key == "authToken").Select(x => x.Value).FirstOrDefault();
             var username = AllCockies.Where(x => x.Key == "username").Select(x => x.Value).FirstOrDefault();
+            var expiresInString = AllCockies.Where(x => x.Key == "expiresIn").Select(x => x.Value).FirstOrDefault();
             //var username = usernameResult?.Value != null ? Uri.UnescapeDataString(usernameResult.Value) : null;
             var identity = string.IsNullOrEmpty(token) ? new ClaimsIdentity() : new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
+            
+            DateTimeOffset expiresIn;
+            bool isTokenExpired = DateTimeOffset.TryParse(expiresInString, out expiresIn) && expiresIn < DateTimeOffset.UtcNow;
+
+            if (isTokenExpired)
+            {
+                MarkUserAsLoggedOut();
+                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            } 
 
             if (!string.IsNullOrEmpty(username))
             {
@@ -40,9 +51,14 @@ namespace BlazorAuthentication.Service.Authentication
 
             _httpClient.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(token) ? null : new AuthenticationHeaderValue("bearer", token);
 
-            var user = new ClaimsPrincipal(identity);
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                MarkUserAsLoggedOut();
+                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            }
 
-            return new AuthenticationState(user);
+            return new AuthenticationState(new ClaimsPrincipal(
+               new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt")));
         }
 
         public void MarkUserAsAuthenticated(string token)
@@ -69,16 +85,53 @@ namespace BlazorAuthentication.Service.Authentication
 
         private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var jwtToken = tokenHandler.ReadJwtToken(jwt);
-            return jwtToken.Claims.Select(claim =>
+            var claims = new List<Claim>();
+
+            if (string.IsNullOrEmpty(jwt))
             {
-                if (claim.Type == "unique_name")
+                return claims;
+            }
+
+            var payload = jwt.Split('.')[1];
+            var jsonBytes = ParseBase64WithoutPadding(payload);
+
+            try
+            {
+                var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
+
+                if (keyValuePairs.TryGetValue("User", out var roles))
                 {
-                    return new Claim(ClaimTypes.Name, claim.Value);
+                    if (roles is JsonElement rolesJson && rolesJson.ValueKind == JsonValueKind.Array)
+                    {
+                        var parsedRoles = JsonSerializer.Deserialize<string[]>(rolesJson.GetRawText());
+                        claims.AddRange(parsedRoles.Select(parsedRole => new Claim("User", parsedRole)));
+                    }
+                    keyValuePairs.Remove("User");
                 }
-                return claim;
-            });
+                else
+                {
+                    claims.Add(new Claim("User", "DefaultRole"));
+                }
+
+                claims.AddRange(keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                throw new Exception(ex.ToString());
+            }
+
+            return claims;
+        }
+        private byte[] ParseBase64WithoutPadding(string base64)
+        {
+            switch (base64.Length % 4)
+            {
+                case 2: base64 += "=="; break;
+                case 3: base64 += "="; break;
+            }
+            return Convert.FromBase64String(base64);
         }
     }
-}
+ }
+

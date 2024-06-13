@@ -49,9 +49,6 @@ namespace BlazorAuthentication.Service.Services
                     await _cookieService.SetAsync("email", tokenModel.Data.UserToken.Email, currentDateTimeOffset.AddMinutes(60));
                     await _cookieService.SetAsync("userName", tokenModel.Data.UserToken.UserName, currentDateTimeOffset.AddMinutes(60));
 
-                    //CookieHelper.SetCookie(_httpContextAccessor, "authToken", tokenModel.Data.AccessToken, 60);
-                    //CookieHelper.SetCookie(_httpContextAccessor, "username", tokenModel.Data.RefreshToken, 60);
-
                     ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(tokenModel.Data.AccessToken);
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", tokenModel.Data.AccessToken);
 

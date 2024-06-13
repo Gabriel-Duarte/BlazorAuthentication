@@ -25,17 +25,36 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
         if (user.Identity.IsAuthenticated)
         {
-            username = user.Identity.Name; // Or user.FindFirst("username")?.Value if using a custom claim
+            var uniqueNameClaim = user.Claims.FirstOrDefault(c => c.Type == "unique_name");
+
+            if (uniqueNameClaim != null)
+            {
+                username = uniqueNameClaim.Value;
+                StateHasChanged();
+            }
         }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        // var user = authState.User;
+
+        // if (user.Identity.IsAuthenticated)
+        // {
+        //     var uniqueNameClaim = user.Claims.FirstOrDefault(c => c.Type == "unique_name");
+
+        //     if (uniqueNameClaim != null)
+        //     {
+        //         username = uniqueNameClaim.Value;
+        //         StateHasChanged();
+        //     }
+        // }
     }
 
     private void IncrementCount()

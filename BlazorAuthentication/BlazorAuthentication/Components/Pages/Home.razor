@@ -23,7 +23,13 @@
 
         if (user.Identity.IsAuthenticated)
         {
-            username = user.Identity.Name; // Or user.FindFirst("username")?.Value if using a custom claim
+            var uniqueNameClaim = user.Claims.FirstOrDefault(c => c.Type == "unique_name");
+
+            if (uniqueNameClaim != null)
+            {
+                 username = uniqueNameClaim.Value;
+
+            }
         }
     }
 }
