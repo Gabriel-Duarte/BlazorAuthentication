@@ -1,0 +1,103 @@
+﻿@page "/login"
+@using BlazorAuthentication.Client.Model
+
+
+@rendermode InteractiveServer
+
+
+@inject NavigationManager NavigationManager
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+<div class="login-background">
+    <EditForm Model="@loginModel" OnValidSubmit="@OnLogin" Context="editContext">
+        <DataAnnotationsValidator />
+
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-logo">
+                    <img src="images/Mobilize.png" alt="MOBILIZE IOT" />
+                </div>
+                <div class="login-header">Login</div>
+                <div class="login-body">
+                    <div class="login-field">
+                        <label for="Email">Usuário</label>
+                        <InputText id="Email" @bind-Value="loginModel.Username" />
+                        <ValidationMessage For="@(() => loginModel.Username)" />
+                    </div>
+                    <div class="login-field">
+                        <label for="password">Senha</label>
+                        <InputText id="password" @bind-Value="loginModel.Password" type="password" />
+                        <ValidationMessage For="@(() => loginModel.Password)" />
+                    </div>
+                    <div class="login-field">
+                        <button type="submit">Entrar</button>
+                    </div>
+                    <div class="login-footer">
+                        <a href="#">Esqueceu a senha?</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+
+    private LoginRequest loginModel = new LoginRequest();
+    private string Error = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        StateHasChanged();
+    }
+    public async Task OnLogin()
+    {
+        try
+        {
+
+
+            var result = await AuthService.LoginAsync(loginModel.Username, loginModel.Password);
+            if (result)
+            {
+                Navigation.NavigateTo("/home");
+            }
+            else
+            {
+                // Handle login failure
+            }
+            // if (result.IsSuccess && result.Data.AccessToken is not null)
+            // {
+            //     NavigationManager.NavigateTo("/");
+            // }
+            // else if (result.Errors is not null)
+            // {
+            //     foreach (var error in result.Errors)
+            //     {
+            //         NotificationService.Notify(new NotificationMessage
+            //             {
+            //                 Severity = NotificationSeverity.Error,
+            //                 Summary = "Erro:",
+            //                 Detail = error,
+            //                 Duration = 4000
+            //             });
+            //     }
+            // }
+            // else
+            // {
+            //     NotificationService.Notify(new NotificationMessage
+            //         {
+            //             Severity = NotificationSeverity.Error,
+            //             Summary = "Erro:",
+            //             Detail = "Erro ao efetuar o login",
+            //             Duration = 4000
+            //         });
+            // }
+        }
+
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+}

@@ -1,0 +1,100 @@
+﻿.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 90vh; /* Usa min-height para permitir que o conteúdo encolha se necessário */
+    padding-top: 5vh; /* Ajuste para a preferência visual, diminuindo o valor aumenta o espaço acima */
+    margin-right: 20px
+}
+
+/*.login-logo img {
+    max-width: 200px;
+    margin-bottom: 2rem;
+}*/
+
+.login-logo img {
+    max-width: 200px;
+    margin-bottom: 2rem;
+    margin-left: 45px;
+}
+
+.login-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 350px;
+}
+
+.login-header {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: left;
+}
+
+.login-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-field {
+    margin-bottom: 1rem;
+}
+
+    .login-field label {
+        display: block;
+        margin-bottom: .5rem;
+    }
+
+    .login-field input {
+        width: 100%;
+        padding: 10px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .login-field button {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        border: none;
+        color: white;
+        font-size: 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        .login-field button:hover {
+            background-color: #0056b3;
+        }
+
+.login-footer {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+    .login-footer a {
+        color: #007bff;
+        text-decoration: none;
+        font-size: .9rem;
+    }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+.login-background {
+    background-image: url('/images/Logistica.png'); /* Caminho para sua imagem de fundo */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh; /* Full height of the viewport */
+    width: 100vw; /* Full width of the viewport */
+    position: absolute; /* Ensures it covers the full screen */
+    top: 0;
+    left: 0;
+}

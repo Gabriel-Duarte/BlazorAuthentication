@@ -1,0 +1,45 @@
+﻿@page "/counter"
+@rendermode InteractiveWebAssembly
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<CascadingAuthenticationState>
+<AuthorizeView>
+    <Authorized>
+        <p>Welcome, @username!</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not logged in.</p>
+    </NotAuthorized>
+</AuthorizeView>
+</CascadingAuthenticationState>
+@code {
+    private int currentCount = 0;
+    private string username;
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            username = user.Identity.Name; // Or user.FindFirst("username")?.Value if using a custom claim
+        }
+    }
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}
