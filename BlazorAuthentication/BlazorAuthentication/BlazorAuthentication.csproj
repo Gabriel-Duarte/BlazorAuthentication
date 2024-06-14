@@ -10,6 +10,7 @@
     <ProjectReference Include="..\BlazorAuthentication.Client\BlazorAuthentication.Client.csproj" />
     <PackageReference Include="BitzArt.Blazor.Cookies.Server" Version="1.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.6" />
+    <PackageReference Include="Radzen.Blazor" Version="4.32.7" />
   </ItemGroup>
 
 </Project>

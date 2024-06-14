@@ -1,0 +1,144 @@
+﻿@rendermode InteractiveServer
+@using BlazorAuthentication.Client.Model
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+<AuthorizeView>
+    <Authorized>
+        <RadzenHeader style="position: static;">
+            <ChildContent>
+                <div class="row justify-content-start align-items-center">
+                    <div class="col-6 d-flex align-items-center">
+                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+                            <RadzenSidebarToggle @rendermode="@RenderMode.InteractiveServer" Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
+                            <RadzenImage Path="images/Mobilize.png" Style="width: 150px; cursor: pointer;" Click="(()=>NavigationHome())" />
+                        </RadzenStack>
+                    </div>
+                    <div class="col-6 d-flex align-items-center justify-content-end">
+                        <RadzenProfileMenu Style="position: relative; z-index: 1000;">
+                            <ChildContent>
+                                <RadzenProfileMenuItem Text="Sair" Icon="power_settings_new" Path="logout" />
+                                <RadzenLabel Text="@($"{"Versão: " + (System.Reflection.Assembly.GetEntryAssembly().GetName().Version)}")" />
+                            </ChildContent>
+                            <Template>
+                                <RadzenImage Path="images/user.png" style="border-radius: 16px; height: 32px; width: 32px" />
+                            </Template>
+                        </RadzenProfileMenu>
+                    </div>
+                </div>
+            </ChildContent>
+        </RadzenHeader>
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView>
+    <Authorized>
+     @*    <RadzenSidebar Style="@SidebarStyle">
+            <RadzenPanelMenu DisplayStyle="@(sidebar1Expanded ? MenuItemDisplayStyle.IconAndText : MenuItemDisplayStyle.Icon)">
+                <RadzenTextBox @bind-Value="searchText" Placeholder="Pesquisar"
+                               Style="margin: 10px; width: 90%; border-radius: 10px;"
+                               @oninput="@OnSearchTextChanged" Visible="sidebar1Expanded" />
+
+                @foreach (var menuItem in filteredMenuItems)
+                {
+                    if (menuItem.SubMenu == null || !menuItem.SubMenu.Any())
+                    {
+                        <RadzenPanelMenuItem Icon="@menuItem.Icon" Path="@menuItem.Path" Text="@menuItem.Text" />
+
+                    }
+                    else
+                    {
+                        <RadzenPanelMenuItem Icon="@menuItem.Icon" Text="@menuItem.Text"
+                                             Style="background-color: inherit; color: inherit;">
+                            <ChildContent>
+                                @foreach (var subItem in menuItem.SubMenu)
+                                {
+                                    <RadzenPanelMenuItem Icon="@subItem.Icon" Path="@subItem.Path" Text="@subItem.Text" />
+
+                                }
+                            </ChildContent>
+                        </RadzenPanelMenuItem>
+                    }
+                }
+            </RadzenPanelMenu>
+        </RadzenSidebar> *@
+        <RadzenSidebar Style="width:auto">
+            <RadzenPanelMenu DisplayStyle="@(sidebar1Expanded ? MenuItemDisplayStyle.IconAndText : MenuItemDisplayStyle.Icon)">
+                <RadzenPanelMenuItem Text="Overview" Icon="home" />
+                <RadzenPanelMenuItem Text="Dashboard" Icon="dashboard" />
+                <RadzenPanelMenuItem Text="UI Fundamentals" Icon="auto_awesome">
+                    <RadzenPanelMenuItem Text="Themes" Icon="color_lens" />
+                    <RadzenPanelMenuItem Text="Colors" Icon="invert_colors" />
+                </RadzenPanelMenuItem>
+            </RadzenPanelMenu>
+        </RadzenSidebar>
+    </Authorized>
+</AuthorizeView>
+
+
+@code {
+    private string SidebarStyle => $"top: 52px; bottom: 0px; width: {(sidebar1Expanded ? "250px" : "auto")}";
+    private string searchText = "";
+    private List<MenuItem> filteredMenuItems = new List<MenuItem>();
+    private List<MenuItem> menuItems = new List<MenuItem>();
+    private bool sidebar1Expanded = true;
+  
+
+
+    protected async override void OnInitialized()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (!user.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("login");
+        }
+        else
+        {
+            LoadMenu();
+            StateHasChanged();
+        }
+
+    }
+    protected void NavigationHome()
+    {
+        NavigationManager.NavigateTo("home");
+    }
+
+
+    private async Task OnSearchTextChanged(ChangeEventArgs args)
+    {
+        var searchText = args.Value.ToString().ToLower();
+
+        filteredMenuItems = menuItems.Where(m =>
+            m.Text.ToLower().Contains(searchText) ||
+            (m.SubMenu != null && m.SubMenu.Any(sub => sub.Text.ToLower().Contains(searchText)))
+        ).ToList();
+
+        StateHasChanged();
+    }
+
+    public void LoadMenu()
+    {
+        menuItems.Add(new MenuItem { Icon = "home", Path = "/", Text = "Dashboard" });
+        menuItems.Add(new MenuItem
+            {
+                Icon = "inventory",
+                Text = "Inventário",
+                SubMenu = new List<MenuItem> { new MenuItem { Path = "inventoryindex", Text = "Lista de inventário" } }
+            });
+        menuItems.Add(new MenuItem
+            {
+                Icon = "settings",
+                Text = "Cadastros Básicos",
+                SubMenu = new List<MenuItem> { new MenuItem { Path = "assetsindex", Text = "Ativos" },
+            new MenuItem { Path = "toolsindex", Text = "Ferramentas" },
+            new MenuItem { Path = "userindex", Text = "Usuários" }}
+
+            });
+        filteredMenuItems = menuItems;
+    }
+
+
+
+}

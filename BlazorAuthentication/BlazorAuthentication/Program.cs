@@ -1,10 +1,13 @@
 using BitzArt.Blazor.Cookies;
 using BlazorAuthentication.Client.Pages;
+using BlazorAuthentication.Client.Service.Interface;
+using BlazorAuthentication.Client.Service.Service;
 using BlazorAuthentication.Components;
 using BlazorAuthentication.Service.Authentication;
 using BlazorAuthentication.Service.Interfaces;
 using BlazorAuthentication.Service.Services;
 using Microsoft.AspNetCore.Components.Authorization;
+using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,19 @@ builder.Services.AddScoped<AuthenticationStateProvider,ApiAuthenticationStatePro
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddAuthorizationCore();
 builder.AddBlazorCookies();
+builder.Services.AddScoped<IUserService, UserService>();
+var apiMobilizeIOTInventario = builder.Configuration["ApiMobilizeIOTInventario"];
+var apiMobilizeOauth = builder.Configuration["ApiMobilizeOauth"];
+builder.Services.AddHttpClient("ApiMobilizeOauth", options =>
+{
+    options.BaseAddress = new Uri(apiMobilizeOauth);
+});
+builder.Services.AddHttpClient("ApiMobilizeIOTInventario", client =>
+{
+    client.BaseAddress = new Uri(apiMobilizeIOTInventario);
+});
+
+builder.Services.AddRadzenComponents();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

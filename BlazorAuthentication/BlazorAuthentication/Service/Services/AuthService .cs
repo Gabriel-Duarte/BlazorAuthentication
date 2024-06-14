@@ -5,6 +5,7 @@ using BlazorAuthentication.Service.Authentication;
 using BlazorAuthentication.Service.Interfaces;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -12,25 +13,28 @@ namespace BlazorAuthentication.Service.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICookieService _cookieService;
+        private readonly HttpClient _httpClient;
 
-        public AuthService(HttpClient httpClient, AuthenticationStateProvider authenticationStateProvider, IHttpContextAccessor httpContextAccessor, ICookieService cookieService )
+        public AuthService(HttpClient httpClient, IHttpClientFactory httpClientFactory, AuthenticationStateProvider authenticationStateProvider, IHttpContextAccessor httpContextAccessor, ICookieService cookieService )
         {
-            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
             _authenticationStateProvider = authenticationStateProvider;
             _httpContextAccessor = httpContextAccessor;
             _cookieService = cookieService;
+            _httpClient = httpClient;
         }
 
         public async Task<bool> LoginAsync(string username, string password)
         {
             try
             {
+                var httpClient = _httpClientFactory.CreateClient("ApiMobilizeOauth");
                 var loginModel = new { Username = username, Password = password };
-                var loginResult = await _httpClient.PostAsJsonAsync("https://localhost:7279/v1/Auth/Login", loginModel);
+                var loginResult = await httpClient.PostAsJsonAsync("/v1/Auth/Login", loginModel);
 
                 if (loginResult.IsSuccessStatusCode)
                 {

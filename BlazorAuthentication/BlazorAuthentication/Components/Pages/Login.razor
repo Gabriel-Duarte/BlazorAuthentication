@@ -9,7 +9,7 @@
 @inject IAuthService AuthService
 @inject NavigationManager Navigation
 <div class="login-background">
-    <EditForm Model="@loginModel" OnValidSubmit="@OnLogin" Context="editContext">
+    <EditForm Model="@loginModel" OnValidSubmit="@OnLogin" Context="editContext" FormName="login">
         <DataAnnotationsValidator />
 
         <div class="login-container">
