@@ -22,6 +22,7 @@ builder.Services.AddHttpClient("ApiMobilizeIOTInventario", client =>
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddRadzenComponents();
 builder.AddBlazorCookies();
 await builder.Build().RunAsync();

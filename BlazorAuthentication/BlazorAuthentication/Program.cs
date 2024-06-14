@@ -1,5 +1,6 @@
 using BitzArt.Blazor.Cookies;
 using BlazorAuthentication.Client.Pages;
+using BlazorAuthentication.Client.Service.Authentication;
 using BlazorAuthentication.Client.Service.Interface;
 using BlazorAuthentication.Client.Service.Service;
 using BlazorAuthentication.Components;
@@ -24,6 +25,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddAuthorizationCore();
 builder.AddBlazorCookies();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 var apiMobilizeIOTInventario = builder.Configuration["ApiMobilizeIOTInventario"];
 var apiMobilizeOauth = builder.Configuration["ApiMobilizeOauth"];
 builder.Services.AddHttpClient("ApiMobilizeOauth", options =>

@@ -1,7 +1,12 @@
 ﻿using BitzArt.Blazor.Cookies;
+using BlazorAuthentication.Client.Model;
+using BlazorAuthentication.Client.Service.Authentication;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Dynamic.Core.Tokenizer;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
@@ -13,36 +18,52 @@ namespace BlazorAuthentication.Service.Authentication
         private readonly HttpClient _httpClient;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICookieService _cookieService;
-        private readonly NavigationManager _navigation;
-        public ApiAuthenticationStateProvider(HttpClient httpClient, IHttpContextAccessor httpContextAccessor, ICookieService cookieService, NavigationManager navigation)
+        private readonly IRefreshTokenService _refreshTokenService;
+        private SemaphoreSlim refreshTokenSemaphore = new SemaphoreSlim(1, 1);
+        public ApiAuthenticationStateProvider(
+            HttpClient httpClient,
+            IHttpContextAccessor httpContextAccessor,
+            ICookieService cookieService,
+            IRefreshTokenService refreshTokenService)
         {
             _httpClient = httpClient;
             _httpContextAccessor = httpContextAccessor;
             _cookieService = cookieService;
-            _navigation = navigation;
+            _refreshTokenService = refreshTokenService;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            //var token = CookieHelper.GetCookie(_httpContextAccessor, "authToken");
-            //var username = CookieHelper.GetCookie(_httpContextAccessor, "username");
-            var AllCockies = await _cookieService.GetAllAsync();
+            await refreshTokenSemaphore.WaitAsync();
+            try
+            {
+                var Cockies = await _cookieService.GetAllAsync();
+                var savedToken = Cockies.Where(x => x.Key == "authToken").Select(x => x.Value).FirstOrDefault();
+                var expirationToken =  Cockies.Where(x => x.Key == "expiresIn").Select(x => x.Value).FirstOrDefault();
 
+                if (string.IsNullOrWhiteSpace(savedToken) || TokenExpirou(expirationToken))
+                {
+                    await RefreshToken();
+                }
+            }
+            finally
+            {
+                refreshTokenSemaphore.Release();
+            }
+           
+            var AllCockies = await _cookieService.GetAllAsync();
 
             var token = AllCockies.Where(x => x.Key == "authToken").Select(x => x.Value).FirstOrDefault();
             var username = AllCockies.Where(x => x.Key == "username").Select(x => x.Value).FirstOrDefault();
             var expiresInString = AllCockies.Where(x => x.Key == "expiresIn").Select(x => x.Value).FirstOrDefault();
-            //var username = usernameResult?.Value != null ? Uri.UnescapeDataString(usernameResult.Value) : null;
-            var identity = string.IsNullOrEmpty(token) ? new ClaimsIdentity() : new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
-            
-            DateTimeOffset expiresIn;
-            bool isTokenExpired = DateTimeOffset.TryParse(expiresInString, out expiresIn) && expiresIn < DateTimeOffset.UtcNow;
 
-            if (isTokenExpired)
+            if (string.IsNullOrWhiteSpace(token))
             {
                 MarkUserAsLoggedOut();
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
-            } 
+            }
+
+            var identity = string.IsNullOrEmpty(token) ? new ClaimsIdentity() : new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
 
             if (!string.IsNullOrEmpty(username))
             {
@@ -51,14 +72,57 @@ namespace BlazorAuthentication.Service.Authentication
 
             _httpClient.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(token) ? null : new AuthenticationHeaderValue("bearer", token);
 
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                MarkUserAsLoggedOut();
-                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
-            }
-
             return new AuthenticationState(new ClaimsPrincipal(
                new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt")));
+        }
+
+        public async Task RefreshToken()
+        {
+            try
+            {
+
+                TokenDto refreshToken = new TokenDto();
+                var AllCockies = await _cookieService.GetAllAsync();
+
+                refreshToken.RefreshToken = AllCockies.Where(x => x.Key == "refreshToken").Select(x => x.Value).FirstOrDefault();
+                refreshToken.AccessToken = AllCockies.Where(x => x.Key == "authToken").Select(x => x.Value).FirstOrDefault();
+
+
+                if (string.IsNullOrWhiteSpace(refreshToken.AccessToken))
+                {
+                    MarkUserAsLoggedOut();
+                    _httpClient.DefaultRequestHeaders.Authorization = null;
+                    return;
+                }
+
+                var response = await _refreshTokenService.RefreshToken(refreshToken);
+
+                if (response.IsSuccess)
+                {
+                    var NewexpirationToken = response.Data.ExpiresIn.Value.AddHours(-3).ToString("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                    DateTimeOffset currentDateTimeOffset = DateTimeOffset.UtcNow;
+                    
+                    await _cookieService.RemoveAsync("authToken");
+                    await _cookieService.RemoveAsync("refreshToken");
+                    await _cookieService.RemoveAsync("expiresIn");
+
+                    await _cookieService.SetAsync("authToken", response.Data.AccessToken, currentDateTimeOffset.AddMinutes(60));
+                    await _cookieService.SetAsync("refreshToken", response.Data.RefreshToken, currentDateTimeOffset.AddMinutes(60));
+                    await _cookieService.SetAsync("expiresIn", NewexpirationToken, currentDateTimeOffset.AddMinutes(60));
+
+
+                    NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+                }
+                else
+                {
+                    MarkUserAsLoggedOut();
+                    _httpClient.DefaultRequestHeaders.Authorization = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MarkUserAsLoggedOut();
+            }
         }
 
         public void MarkUserAsAuthenticated(string token)
@@ -68,8 +132,29 @@ namespace BlazorAuthentication.Service.Authentication
 
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
         }
+        private bool TokenExpirou(string dataToken)
+        {
+            DateTime dataAtualUtc = DateTime.UtcNow;
+            DateTime dataExpiracao;
 
-        public async void MarkUserAsLoggedOut()
+            string[] formatos = { "yyyy-MM-dd'T'HH:mm:ss.fffffff'Z'", "yyyy-MM-dd'T'HH:mm:ss'Z'" };
+
+            foreach (var formato in formatos)
+            {
+                if (DateTime.TryParseExact(dataToken, formato, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out dataExpiracao))
+                {
+                    if (dataExpiracao < dataAtualUtc)
+                    {
+                        return true;
+                    }
+
+                    break;
+                }
+            }
+
+            return false;
+        }
+        public async Task MarkUserAsLoggedOut()
         {
             await _cookieService.RemoveAsync("authToken");
             await _cookieService.RemoveAsync("refreshToken");

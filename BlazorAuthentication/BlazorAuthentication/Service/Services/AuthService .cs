@@ -47,8 +47,8 @@ namespace BlazorAuthentication.Service.Services
                     DateTimeOffset currentDateTimeOffset = DateTimeOffset.UtcNow;
 
                     await _cookieService.SetAsync("authToken", tokenModel.Data.AccessToken, currentDateTimeOffset.AddMinutes(60));
-                    //await _cookieService.SetAsync("refreshToken", jsonrefreshToken, currentDateTimeOffset.AddMinutes(60));
-                    await _cookieService.SetAsync("expiresIn", tokenModel.Data.ExpiresIn.ToString(), currentDateTimeOffset.AddMinutes(60));
+                    await _cookieService.SetAsync("refreshToken", tokenModel.Data.RefreshToken, currentDateTimeOffset.AddMinutes(60));
+                    await _cookieService.SetAsync("expiresIn", tokenModel.Data.ExpiresIn.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'"), currentDateTimeOffset.AddMinutes(60));
                     await _cookieService.SetAsync("id", tokenModel.Data.UserToken.Id, currentDateTimeOffset.AddMinutes(60));
                     await _cookieService.SetAsync("email", tokenModel.Data.UserToken.Email, currentDateTimeOffset.AddMinutes(60));
                     await _cookieService.SetAsync("userName", tokenModel.Data.UserToken.UserName, currentDateTimeOffset.AddMinutes(60));
