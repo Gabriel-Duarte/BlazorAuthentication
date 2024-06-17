@@ -1,0 +1,156 @@
+﻿@page "/userindexServer"
+
+@rendermode InteractiveServer
+@* O comportamento é muito parecido com o do Stream Rendering, nosso componente irá renderizar mas ficará conectado ao servidor.
+O componente responde rapidamente e se atualiza. Isto acontece quase que instantaneamente pois a conexão via Socket e a otimização na transferência de dados *@
+
+
+@using BlazorAuthentication.Client.Model
+@using BlazorAuthentication.Client.Service.Interface
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject DialogService DialogService
+@inject NotificationService NotificationService
+
+@inject IUserService _userService
+
+
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            <div class="row">
+                <h1 class="text-center">Lista de Usuários</h1>
+                <br />
+                <div class="d-flex flex-column gap-3">
+                    <RadzenDataGrid @ref="grid"
+                                    IsLoading=@isLoading
+                                    Count="@count"
+                                    Data="@UserList"
+                                    LoadData="@LoadData"
+                                    AllowSorting="false"
+                                    AllowFiltering="false"
+                                    AllowPaging="true"
+                                    PageSize="Size"
+                                    PagerHorizontalAlign="HorizontalAlign.Center"
+                                    TItem="UserProfileResponse"
+                                    ColumnWidth="200px"
+                                    EmptyText="Texto nao encontrado">
+                        <Columns>
+                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="TextAlign.Center" Property="Name" Title="Nome" Width="160px" />
+                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="TextAlign.Center" Property="Email" Title="Email" Width="160px" />
+                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="TextAlign.Center" Property="UserName" Title="Usuários" Width="160px" />
+                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="TextAlign.Center" Property="Registration" Title="Matrícula" Width="160px" />
+
+                        </Columns>
+                    </RadzenDataGrid>
+                </div>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <Redirect />
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+@code {
+
+    private int count;
+    private List<UserProfileResponse> UserList = new();
+    private RadzenDataGrid<UserProfileResponse> grid;
+
+
+    private string? selectedRole = null;
+
+    private bool isLoading = true;
+    private int Size = 10;
+    private int CurrentPage = 1;
+
+    private string? filterName = null;
+    private string? filterUsername = null;
+    private string? filterEmail = null;
+    private string? filterRegistration = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        try
+        {
+            await base.OnInitializedAsync();
+            await GetUser(new UserPage { Page = 1, Size = Size, Sort = "", Direction = 1 });
+
+        }
+        finally
+        {
+            isLoading = false;
+        }
+        StateHasChanged();
+    }
+
+    private async Task GetUser(UserPage request)
+    {
+        request.Email = filterEmail;
+        request.Search = filterUsername;
+        request.Name = filterName;
+        request.Registration = filterRegistration;
+        request.Role = selectedRole;
+
+
+        var result = await _userService.GetListUser(request);
+
+
+        if (result.IsSuccess)
+        {
+            count = result.Data.TotalElements;
+            UserList = result.Data.Content;
+            StateHasChanged();
+        }
+        else if (result.Errors is not null)
+        {
+            foreach (var error in result.Errors)
+            {
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = Summary.Error,
+                        Detail = error,
+                        Duration = 4000
+                    });
+            }
+        }
+        else
+        {
+            NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = Summary.Error,
+                    Detail = "Erro ao carregar as informações",
+                    Duration = 4000
+                });
+        }
+    }
+
+
+    private async Task LoadData(LoadDataArgs args)
+    {
+        CurrentPage = ((int)args.Skip / (int)args.Top) + 1;
+        UserPage userPage = new UserPage
+            {
+                Page = CurrentPage,
+                Size = (int)args.Top,
+                Sort = args.OrderBy,
+            };
+
+        await GetUser(userPage);
+    }
+
+    private async void Search()
+    {
+        if (CurrentPage == 1) await grid.Reload();
+        else await grid.FirstPage();
+    }
+
+
+
+}
+

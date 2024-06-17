@@ -1,4 +1,4 @@
-﻿@rendermode InteractiveServer
+﻿@rendermode InteractiveServer 
 @using BlazorAuthentication.Client.Model
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -61,16 +61,17 @@
                 }
             </RadzenPanelMenu>
         </RadzenSidebar> *@
-        <RadzenSidebar Style="width:auto">
-            <RadzenPanelMenu DisplayStyle="@(sidebar1Expanded ? MenuItemDisplayStyle.IconAndText : MenuItemDisplayStyle.Icon)">
+       @*  <RadzenSidebar Style="width:auto"> *@
+           @*  <RadzenPanelMenu DisplayStyle="@(sidebar1Expanded ? MenuItemDisplayStyle.IconAndText : MenuItemDisplayStyle.Icon)" > *@
+       @*  <RadzenPanelMenu>
                 <RadzenPanelMenuItem Text="Overview" Icon="home" />
                 <RadzenPanelMenuItem Text="Dashboard" Icon="dashboard" />
-                <RadzenPanelMenuItem Text="UI Fundamentals" Icon="auto_awesome">
+                <RadzenPanelMenuItem Text="UI Fundamentals" Icon="auto_awesome" >
                     <RadzenPanelMenuItem Text="Themes" Icon="color_lens" />
                     <RadzenPanelMenuItem Text="Colors" Icon="invert_colors" />
                 </RadzenPanelMenuItem>
-            </RadzenPanelMenu>
-        </RadzenSidebar>
+            </RadzenPanelMenu> *@
+       @*  </RadzenSidebar> *@
     </Authorized>
 </AuthorizeView>
 

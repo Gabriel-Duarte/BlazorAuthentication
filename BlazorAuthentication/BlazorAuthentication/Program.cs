@@ -1,4 +1,5 @@
 using BitzArt.Blazor.Cookies;
+using BlazorAuthentication.Client.Model;
 using BlazorAuthentication.Client.Pages;
 using BlazorAuthentication.Client.Service.Authentication;
 using BlazorAuthentication.Client.Service.Interface;
@@ -24,6 +25,7 @@ builder.Services.AddScoped<AuthenticationStateProvider,ApiAuthenticationStatePro
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddAuthorizationCore();
 builder.AddBlazorCookies();
+builder.Services.AddScoped<ThemeState>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 var apiMobilizeIOTInventario = builder.Configuration["ApiMobilizeIOTInventario"];
@@ -37,7 +39,16 @@ builder.Services.AddHttpClient("ApiMobilizeIOTInventario", client =>
     client.BaseAddress = new Uri(apiMobilizeIOTInventario);
 });
 
+builder.Services.AddScoped<DialogService>();
+builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<TooltipService>();
+builder.Services.AddScoped<ContextMenuService>();
 builder.Services.AddRadzenComponents();
+//builder.Services.AddRazorComponents()
+//    .AddInteractiveServerComponents()
+//    .AddInteractiveWebAssemblyComponents();
+
+//builder.Services.AddRazorComponents();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -53,6 +64,11 @@ else
 }
 
 app.UseHttpsRedirection();
+
+//app.MapRazorComponents<App>()
+//    .AddInteractiveServerRenderMode()
+//     .AddInteractiveWebAssemblyRenderMode();
+
 
 app.UseStaticFiles();
 app.UseAntiforgery();

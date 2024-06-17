@@ -1,5 +1,6 @@
 
 using BitzArt.Blazor.Cookies;
+using BlazorAuthentication.Client.Model;
 using BlazorAuthentication.Client.Service.Authentication;
 using BlazorAuthentication.Client.Service.Interface;
 using BlazorAuthentication.Client.Service.Service;
@@ -22,7 +23,10 @@ builder.Services.AddHttpClient("ApiMobilizeIOTInventario", client =>
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ThemeState>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddRadzenComponents();
+
+
 builder.AddBlazorCookies();
 await builder.Build().RunAsync();

@@ -153,7 +153,7 @@ namespace BlazorAuthentication.Client.Service.Authentication
                 MarkUserAsLoggedOut();
             }
         }
-
+        
         private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
         {
             var claims = new List<Claim>();

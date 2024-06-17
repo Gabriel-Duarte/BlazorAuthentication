@@ -4,8 +4,6 @@ using BlazorAuthentication.Client.Model;
 using BlazorAuthentication.Service.Authentication;
 using BlazorAuthentication.Service.Interfaces;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -19,7 +17,7 @@ namespace BlazorAuthentication.Service.Services
         private readonly ICookieService _cookieService;
         private readonly HttpClient _httpClient;
 
-        public AuthService(HttpClient httpClient, IHttpClientFactory httpClientFactory, AuthenticationStateProvider authenticationStateProvider, IHttpContextAccessor httpContextAccessor, ICookieService cookieService )
+        public AuthService(HttpClient httpClient, IHttpClientFactory httpClientFactory, AuthenticationStateProvider authenticationStateProvider, IHttpContextAccessor httpContextAccessor, ICookieService cookieService)
         {
             _httpClientFactory = httpClientFactory;
             _authenticationStateProvider = authenticationStateProvider;

@@ -1,19 +1,15 @@
-﻿@page "/"
-@rendermode InteractiveServer
-@inject IAuthService AuthService
+﻿@page "/Authenticated"
+@using Microsoft.AspNetCore.Components.Authorization
+
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider _authenticationStateProvider
 
 @code {
-    protected override async Task OnInitializedAsync()
+    protected override async void OnInitialized()
     {
         var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-        if (authState.User.Identity.IsAuthenticated)
-        {
-            NavigationManager.NavigateTo("home");
-        }
-        else
+        if (!authState.User.Identity.IsAuthenticated)
         {
             NavigationManager.NavigateTo("login");
         }

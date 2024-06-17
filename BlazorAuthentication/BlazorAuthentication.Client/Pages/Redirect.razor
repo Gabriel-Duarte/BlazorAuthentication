@@ -1,7 +1,5 @@
-﻿@page "/Authenticated"
-
+﻿@page "/"
 @rendermode InteractiveServer
-@inject IAuthService AuthService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider _authenticationStateProvider
@@ -10,9 +8,13 @@
     protected override async Task OnInitializedAsync()
     {
         var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-        if (!authState.User.Identity.IsAuthenticated)
+        if (authState.User.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("home");
+        }
+        else
         {
             NavigationManager.NavigateTo("login");
-        } 
+        }
     }
 }

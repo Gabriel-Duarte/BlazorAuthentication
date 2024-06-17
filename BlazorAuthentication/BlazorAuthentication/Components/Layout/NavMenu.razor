@@ -1,4 +1,8 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@rendermode InteractiveServer
+
+
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">BlazorAuthentication</a>
     </div>
@@ -25,22 +29,46 @@
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
             </NavLink>
         </div>
+
+       
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="login">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login
+            <NavLink class="nav-link d-flex align-items-center justify-content-between" @onclick="ToggleSubNav">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span>
+                <span>Usuarios</span>
+                <span class="bi @(expandSubNav ? "bi-caret-down-fill" : "bi-caret-right-fill")" aria-hidden="true" style="position: relative; top: -13px;"></span>
             </NavLink>
+
+
+            @if (expandSubNav)
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="userindexauto">
+                        <span aria-hidden="true">userindexauto</span>
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="userindexServer">
+                        <span aria-hidden="true">userindexServer</span>
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="userindexWebAssembly">
+                        <span aria-hidden="true">userindexWebAssembly</span>
+                    </NavLink>
+                </div>
+                
+            }
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="logout">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Logout
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="userindex">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Userindex
-            </NavLink>
-        </div>
-        
     </nav>
 </div>
 
+
+@code {
+    private bool expandSubNav;
+    private string icone;
+
+    private void ToggleSubNav()
+    {
+        expandSubNav = !expandSubNav;
+    }
+}

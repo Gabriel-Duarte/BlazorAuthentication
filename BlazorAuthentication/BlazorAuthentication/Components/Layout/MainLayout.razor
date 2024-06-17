@@ -1,10 +1,18 @@
-﻿@using BlazorAuthentication.Components.Pages
+﻿@using BlazorAuthentication.Client.Model
+@using BlazorAuthentication.Components.Pages
 @inherits LayoutComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject ThemeState ThemeState
 
-@* <Authenticated /> *@
-<CascadingAuthenticationState>
+<RadzenNotification @rendermode="@RenderMode.InteractiveServer" />
+<RadzenDialog @rendermode="@RenderMode.InteractiveServer" />
+<RadzenContextMenu @rendermode="@RenderMode.InteractiveServer" />
+<RadzenTooltip @rendermode="@RenderMode.InteractiveServer" />
+
+@*<Authenticated />  *@
+
+  <CascadingAuthenticationState>
   
             <div class="page">
         <AuthorizeView>
@@ -18,7 +26,17 @@
                      <AuthorizeView>
             <Authorized>
             <div class="top-row px-4">
-                <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+                        <div class="col-6 d-flex align-items-center justify-content-end">
+                            <RadzenProfileMenu Style="position: relative; z-index: 1000;">
+                                <ChildContent>
+                                    <RadzenProfileMenuItem Text="Sair" Icon="power_settings_new" Path="logout" />
+                                    <RadzenLabel Text="@($"{"Versão: " + (System.Reflection.Assembly.GetEntryAssembly().GetName().Version)}")" />
+                                </ChildContent>
+                                <Template>
+                                    <RadzenImage Path="images/user.png" style="border-radius: 16px; height: 32px; width: 32px" />
+                                </Template>
+                            </RadzenProfileMenu>
+                        </div>
             </div>
                 </Authorized>
             </AuthorizeView>
@@ -35,34 +53,3 @@
     <a class="dismiss">🗙</a>
 </div>
 
-@* @code{
-    protected async override void OnInitialized()
-    {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (!user.Identity.IsAuthenticated)
-        {
-            NavigationManager.NavigateTo("login");
-        }
-        else
-
-            StateHasChanged();
-        }
-
-
-    } *@
-@code {
-
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-    //     if (!authState.User.Identity.IsAuthenticated)
-    //     {
-    //         NavigationManager.NavigateTo("login");
-
-    //     }
-    //}
-
-
-}
