@@ -25,6 +25,8 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ThemeState>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IFilialService, FilialService>();
 builder.Services.AddRadzenComponents();
 
 

@@ -28,6 +28,8 @@ builder.AddBlazorCookies();
 builder.Services.AddScoped<ThemeState>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IFilialService, FilialService>();
 var apiMobilizeIOTInventario = builder.Configuration["ApiMobilizeIOTInventario"];
 var apiMobilizeOauth = builder.Configuration["ApiMobilizeOauth"];
 builder.Services.AddHttpClient("ApiMobilizeOauth", options =>

@@ -18,6 +18,19 @@
             <div class="row">
                 <h1 class="text-center">Lista de Usuários Auto</h1>
                 <br />
+
+                <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0; width: 100%; box-sizing: border-box;" />
+                <br />
+
+                <div class="filter-container d-flex align-items-center justify-content-end" style="gap: 15px;">
+                    <RadzenButton Icon="add"
+                                  Text="Novo Usuário"
+                                  Style="width: auto; max-width: 100%; height: 40px; border-radius: 10px; padding: 10px 20px;"
+                                  Click="OnUserCreate">
+                    </RadzenButton>
+
+                </div>
+                <br />
                 <div class="d-flex flex-column gap-3">
                     <RadzenDataGrid @ref="grid"
                                     IsLoading=@isLoading
@@ -147,7 +160,25 @@
         else await grid.FirstPage();
     }
 
+    public async Task OnUserCreate()
+    {
 
+
+        var dialogResult = await DialogService.OpenAsync<CreateUser>("Novo Usuário", null,
+                                                   new DialogOptions()
+                                                       {
+                                                           Width = ModalState.Medium,
+                                                           CloseDialogOnEsc = ModalState.CloseDialogOnEsc,
+                                                           Draggable = ModalState.Draggable,
+                                                           Resizable = ModalState.Resizable,
+                                                           Height = "76%",
+                                                           ShowClose = ModalState.ShowClose
+                                                       });
+        if (dialogResult is not null)
+        {
+            await grid.Reload();
+        }
+    }
 
 }
 

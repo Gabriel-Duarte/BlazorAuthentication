@@ -1,0 +1,234 @@
+﻿@rendermode InteractiveAuto
+
+@using BlazorAuthentication.Client.Model
+@using BlazorAuthentication.Client.Service.Interface
+@inject DialogService DialogService
+@inject IRoleService _roleService
+@inject NotificationService NotificationService
+@inject IFilialService _filialService
+@inject IUserService _userService
+
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            <RadzenTemplateForm Data="@newUser" Submit="@((RegisterUserRequest args) => Submit(args))" FormName="create" Enhance>
+                <ChildContent Context="formContext">
+                    <RadzenRow>
+                        <RadzenColumn>
+                            <RadzenStack>
+                                <RadzenFieldset Text="Cadastro de Usuário">
+                                    <RadzenStack Gap="1rem">
+                                        <RadzenRow class="row mb-4">
+
+                                            <div class="col-lg-5 col-md-6 col-sm-12 mb-3">
+                                                <div>
+                                                    <RadzenLabel Text="Nome" Style="display: block; margin-bottom: 5px;" />
+                                                    <RadzenTextBox Placeholder="Nome" Name="Name" @bind-Value="@newUser.Name" class="w-100" aria-label="TextBox with placeholder" />
+                                                    <RadzenRequiredValidator Component="Name" Text="Campo obrigatório*" Popup="false" class="text-danger mt-2" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5 col-md-6 col-sm-12 mb-3">
+                                                <div>
+                                                    <RadzenLabel Text="Matrícula" Style="display: block; margin-bottom: 5px;" />
+                                                    <RadzenTextBox Placeholder="Matrícula" Name="Registration" @bind-Value="@newUser.Registration" class="w-100" aria-label="TextBox with placeholder" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5 col-md-6 col-sm-12 mb-3">
+                                                <div>
+                                                    <RadzenLabel Text="Usuário" Style="display: block; margin-bottom: 5px;" />
+                                                    <RadzenTextBox Placeholder="Usuário" Name="Username" @bind-Value="@newUser.Username" class="w-100" aria-label="TextBox with placeholder" />
+                                                    <RadzenRequiredValidator Component="Username" Text="Campo obrigatório*" Popup="false" class="text-danger mt-2" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5 col-md-6 col-sm-12 mb-3">
+                                                <div>
+                                                    <RadzenLabel Text="Senha" Style="display: block; margin-bottom: 5px;" />
+                                                    <RadzenTextBox Placeholder="Senha" Name="Password" @bind-Value="@newUser.Password" class="w-100" aria-label="TextBox with placeholder" />
+                                                    <RadzenRequiredValidator Component="Password" Text="Campo obrigatório*" Popup="false" class="text-danger mt-2" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-10 col-md-6 col-sm-12 mb-3">
+                                                <div class="form-group">
+                                                    <RadzenLabel Text="Email" Style="display: block; margin-bottom: 5px;" />
+                                                    <RadzenTextBox Placeholder="Email" Name="Description" @bind-Value="@newUser.Email" class="form-control" aria-label="TextBox with placeholder" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5 col-md-6 col-sm-12 mb-1">
+                                                <div style="padding: 10px 5px 0;">
+                                                    <RadzenLabel Text="Perfil" Style="display: block; margin-bottom: 5px;" />
+                                                    <RadzenDropDown Multiple="true"
+                                                                    Data="@RoleList"
+                                                                    TextProperty="Name"
+                                                                    ValueProperty="Id"
+                                                                    AllowClear="true"
+                                                                    Placeholder="Selecione um Perfil"
+                                                                    Chips="true"
+                                                                    Style="width: 100%;"
+                                                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                                                    FilterOperator="StringFilterOperator.StartsWith"
+                                                                    AllowFiltering="true"
+                                                                    @bind-Value="@selectedRoles"
+                                                                    Name="Role">
+                                                    </RadzenDropDown>
+                                                    <RadzenRequiredValidator Component="Role" Text="Campo obrigatório*" Popup="false" class="text-danger mt-2" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5 col-md-6 col-sm-12 mb-1">
+                                                <div style="padding: 10px 5px 0;">
+                                                    <RadzenLabel Text="Local" Style="display: block; margin-bottom: 5px;" />
+                                                    <RadzenDropDown Multiple="true"
+                                                                    Data="@FilialList"
+                                                                    TextProperty="Name"
+                                                                    ValueProperty="Id"
+                                                                    AllowClear="true"
+                                                                    Placeholder="Selecione um Local"
+                                                                    Chips="true"
+                                                                    Style="width: 100%;"
+                                                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                                                    FilterOperator="StringFilterOperator.StartsWith"
+                                                                    AllowFiltering="true"
+                                                                    @bind-Value="@selectedFilial"
+                                                                    Name="filial">
+                                                    </RadzenDropDown>
+                                                    <RadzenRequiredValidator Component="filial" Text="Campo obrigatório*" Popup="false" class="text-danger mt-2" />
+                                                </div>
+                                            </div>
+
+                                        </RadzenRow>
+                                    </RadzenStack>
+                                </RadzenFieldset>
+                            </RadzenStack>
+                        </RadzenColumn>
+                    </RadzenRow>
+                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+                        <RadzenButton Shade="Shade.Darker" Size="ButtonSize.Large" ButtonStyle="ButtonStyle.Secondary" Icon="add_circle_outline" Style="border-radius: 10px;" Text="Criar Usuário" ButtonType="ButtonType.Submit" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Large" Icon="cancel" Text="Cancelar" Style="border-radius: 10px;" Click="@Cancel" />
+                    </RadzenStack>
+                </ChildContent>
+            </RadzenTemplateForm>
+        </Authorized>
+        <NotAuthorized>
+            <Redirect />
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+
+@code {
+    private List<Role> RoleList = new();
+    private List<ListFilialResponse> FilialList = new();
+    private List<string>? selectedRoles = null;
+    private List<Guid>? selectedFilial = null;
+    private bool isLoading;
+
+    private RegisterUserRequest newUser = new RegisterUserRequest();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isLoading = true;
+            try
+            {
+                await base.OnInitializedAsync();
+                var resultRole = await _roleService.GetListRole();
+                if (resultRole.IsSuccess)
+                {
+                    RoleList = resultRole.Data.RolesDto;
+                }
+                else
+                {
+                    Console.WriteLine("Failed to fetch roles");
+                }
+
+                var resultFilial = await _filialService.GetListFilial(new FilialPage { Page = 1, Size = 400, Sort = "", Direction = 1 });
+                if (resultFilial.IsSuccess)
+                {
+                    FilialList = resultFilial.Data.Content;
+                }
+                else
+                {
+                    Console.WriteLine("Failed to fetch filials");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception in OnAfterRenderAsync: {ex.Message}");
+            }
+            finally
+            {
+                isLoading = false;
+            }
+            StateHasChanged();
+        }
+    }
+
+    private async Task Submit(RegisterUserRequest args)
+    {
+        try
+        {
+            if (selectedRoles == null || selectedFilial == null)
+            {
+                Console.WriteLine("selectedRoles or selectedFilial is null");
+                return;
+            }
+
+            newUser.Roles = RoleList.Where(x => selectedRoles.Contains(x.Id)).ToList();
+            newUser.Filiais = FilialList
+                .Where(x => selectedFilial.Contains(x.Id))
+                .Select(x => new Filial
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        IdCompany = x.IdCompany,
+                        Description = x.Description
+                    })
+                .ToList();
+
+            var result = await _userService.CreateUser(newUser);
+            if (result.IsSuccess)
+            {
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Success",
+                        Detail = "Usuário criado",
+                        Duration = 4000
+                    });
+
+                DialogService.Close(result.Data);
+            }
+            else if (result.Errors is not null)
+            {
+                foreach (var error in result.Errors)
+                {
+                    NotificationService.Notify(new NotificationMessage
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Error",
+                            Detail = error,
+                            Duration = 4000
+                        });
+                }
+            }
+            else
+            {
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Error",
+                        Detail = "Erro ao criar Usuário",
+                        Duration = 4000
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
+        }
+    }
+
+    void Cancel()
+    {
+        DialogService.Close(null);
+    }
+}

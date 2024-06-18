@@ -55,10 +55,50 @@ namespace BlazorAuthentication.Client.Service.Service
                 };
             }
         }
+        public async Task<ResponseDto<RegisterUserResponse>> CreateUser(RegisterUserRequest registerUserRequest)
+        {
+            try
+            {
 
-  
+                var httpClient = _httpClientFactory.CreateClient("ApiMobilizeOauth");
 
-    
-     
+                var postsCreateRequestDtoAsJson = JsonSerializer.Serialize(registerUserRequest);
+                var requestContent = new StringContent(postsCreateRequestDtoAsJson, Encoding.UTF8, "application/json");
+
+                var accessTokenResult = await _cookieService.GetAsync("authToken");
+                var accessToken = accessTokenResult.Value;
+
+
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                var response = await httpClient.PostAsync("v1/User/Register", requestContent);
+
+                var resultAssets = await DeserializeObject<ResponseDto<RegisterUserResponse>>(response);
+
+                if (resultAssets is null)
+                {
+                    return new ResponseDto<RegisterUserResponse>
+                    {
+                        IsSuccess = false,
+                        Errors = new List<string> { "Não foi possível processar os dados recebidos do serviço.Verifique se o formato dos dados está correto." }
+                    };
+                }
+
+                return resultAssets;
+
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDto<RegisterUserResponse>
+                {
+                    IsSuccess = false,
+                    Errors = new List<string> { $"Erro durante a execução da solicitação HTTP: {ex.Message}" }
+                };
+            }
+        }
+
+
+
+
     }
 }
