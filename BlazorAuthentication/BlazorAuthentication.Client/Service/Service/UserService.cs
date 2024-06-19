@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text;
 using BitzArt.Blazor.Cookies;
+using System.Net.Http;
 
 namespace BlazorAuthentication.Client.Service.Service
 {
@@ -96,9 +97,83 @@ namespace BlazorAuthentication.Client.Service.Service
                 };
             }
         }
+        public async Task<ResponseDto<UserProfileResponse>> EditUser(UpdateUserProfileRequest updateUserProfileRequest)
+        {
+            try
+            {
 
+                var httpClient = _httpClientFactory.CreateClient("ApiMobilizeOauth");
 
+                var UpdateRequestDtoAsJson = JsonSerializer.Serialize(updateUserProfileRequest);
+                var requestContent = new StringContent(UpdateRequestDtoAsJson, Encoding.UTF8, "application/json");
 
+                var accessTokenResult = await _cookieService.GetAsync("authToken");
+                var accessToken = accessTokenResult.Value;
+
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                var response = await httpClient.PutAsync("v1/User", requestContent);
+
+                var resultUser = await DeserializeObject<ResponseDto<UserProfileResponse>>(response);
+
+                if (resultUser is null)
+                {
+                    return new ResponseDto<UserProfileResponse>
+                    {
+                        IsSuccess = false,
+                        Errors = new List<string> { "Não foi possível processar os dados recebidos do serviço.Verifique se o formato dos dados está correto." }
+                    };
+                }
+
+                return resultUser;
+
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDto<UserProfileResponse>
+                {
+                    IsSuccess = false,
+                    Errors = new List<string> { $"Erro durante a execução da solicitação HTTP: {ex.Message}" }
+                };
+            }
+        }
+
+        public async Task<ResponseDto<UserProfileResponse>> GetUserByid(string id)
+        {
+            try
+            {
+                var httpClient = _httpClientFactory.CreateClient("ApiMobilizeOauth");
+                var accessTokenResult = await _cookieService.GetAsync("authToken");
+                var accessToken = accessTokenResult.Value;
+
+                var apiUrl = $"/v1/User/UserProfileById?userId={id}";
+
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                var response = await httpClient.GetAsync(apiUrl);
+
+                var resultUser = await DeserializeObject<ResponseDto<UserProfileResponse>>(response);
+
+                if (resultUser is null)
+                {
+                    return new ResponseDto<UserProfileResponse>
+                    {
+                        IsSuccess = false,
+                        Errors = new List<string> { "Não foi possível processar os dados recebidos do serviço.Verifique se o formato dos dados está correto." }
+                    };
+                }
+
+                return resultUser;
+            }
+            catch (Exception ex)
+            {
+                return new ResponseDto<UserProfileResponse>
+                {
+                    IsSuccess = false,
+                    Errors = new List<string> { $"Erro durante a execução da solicitação HTTP: {ex.Message}" }
+                };
+            }
+        }
 
     }
 }

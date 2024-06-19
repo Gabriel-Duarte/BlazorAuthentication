@@ -10,6 +10,7 @@ using BlazorAuthentication.Service.Interfaces;
 using BlazorAuthentication.Service.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Radzen;
+using Syncfusion.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +19,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-
+builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor(); // Adiciona HttpContextAccessor
 builder.Services.AddScoped<AuthenticationStateProvider,ApiAuthenticationStateProvider>();
@@ -30,6 +31,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IFilialService, FilialService>();
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NCaF5cXmZCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWXlfeHVVRmBZVERwXko=");
+builder.Services.AddSyncfusionBlazor();
 var apiMobilizeIOTInventario = builder.Configuration["ApiMobilizeIOTInventario"];
 var apiMobilizeOauth = builder.Configuration["ApiMobilizeOauth"];
 builder.Services.AddHttpClient("ApiMobilizeOauth", options =>

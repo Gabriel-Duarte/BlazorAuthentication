@@ -1,15 +1,15 @@
-﻿@using BlazorAuthentication.Components.Layout
+﻿@* @using BlazorAuthentication.Components.Layout
 @using Microsoft.AspNetCore.Components.Authorization
 
-<CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._Imports).Assembly }">
+
+    <Router AppAssembly="@typeof(Program).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" >
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
-                  <Authenticated/>
+                    <Authenticated />
                 </NotAuthorized>
                 <Authorizing>
-                    <p>autorizando ....</p>
+                    <p>Autorizando ....</p>
                 </Authorizing>
             </AuthorizeRouteView>
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
@@ -19,5 +19,15 @@
                 <p>Sorry, there's nothing at this address.</p>
             </LayoutView>
         </NotFound>
-    </Router>
-</CascadingAuthenticationState>
+    </Router> *@
+
+    <Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._Imports).Assembly }">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+            <NotAuthorized>
+                <Redirect />
+            </NotAuthorized>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+</Router>

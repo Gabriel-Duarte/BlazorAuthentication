@@ -1,0 +1,188 @@
+﻿@rendermode InteractiveAuto
+
+@using BlazorAuthentication.Client.Model
+@using BlazorAuthentication.Client.Service.Interface
+@using Syncfusion.Blazor.DataForm
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Notifications
+@using Microsoft.AspNetCore.Components.Authorization
+
+
+@inject DialogService DialogService
+@inject IRoleService _roleService
+@inject NotificationService NotificationService
+@inject IFilialService _filialService
+@inject IUserService _userService
+
+
+<div class="form-section">
+    <SfDataForm ID="MyForm"
+                Model="User"
+                Width="50%"
+                ButtonsAlignment="FormButtonsAlignment.Center">
+        <FormValidator>
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+        </FormValidator>
+        <FormTemplate>
+            <SfAccordion ExpandMode="ExpandMode.Single">
+                <AccordionItems>
+                    <AccordionItem Expanded="true">
+                        <HeaderTemplate>Cadastro de Usuário</HeaderTemplate>
+                        <ContentTemplate>
+                            <div class="product-details">
+                                <div class="form-group">
+                                    <label class="e-form-label">Nome</label>
+                                    <SfTextBox @bind-Value="User.Name" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="e-form-label">Matrícula</label>
+                                    <SfTextBox @bind-Value="User.Registration" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="e-form-label">Usuário</label>
+                                    <SfTextBox @bind-Value="User.UserName" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="e-form-label">Senha</label>
+                                    <SfTextBox @bind-Value="User.Password" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="e-form-label">Email</label>
+                                    <SfTextBox @bind-Value="User.Email" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="e-form-label">Roles</label>
+                                    <SfMultiSelect @bind-Value="selectedRoles" DataSource="@User.Roles" TItem="SelectRole" TValue="List<string>" Placeholder="Selecione um Perfil" AllowFiltering="true" FilterType="Syncfusion.Blazor.DropDowns.FilterType.StartsWith">
+                                        <MultiSelectFieldSettings Text="Name" Value="Id"></MultiSelectFieldSettings>
+                                    </SfMultiSelect>
+                                    <ValidationMessage For="@(() => selectedRoles)" TValue="List<string>"></ValidationMessage>
+                                </div>
+                                <div class="form-group">
+                                    <label class="e-form-label">Filiais</label>
+                                    <SfMultiSelect @bind-Value="selectedFilial" DataSource="@User.Filiais" TItem="SelectFilial" TValue="List<Guid>" Placeholder="Selecione um Local" AllowFiltering="true" FilterType="Syncfusion.Blazor.DropDowns.FilterType.StartsWith">
+                                        <MultiSelectFieldSettings Text="Name" Value="Id"></MultiSelectFieldSettings>
+                                    </SfMultiSelect>
+                                </div>
+
+                            </div>
+                        </ContentTemplate>
+                    </AccordionItem>
+
+                </AccordionItems>
+            </SfAccordion>
+        </FormTemplate>
+        <FormButtons>
+            <SfButton OnClick="(()=>Submit(User))" Content="Criar Usuário" CssClass="e-primary"></SfButton>
+            <SfButton Content="Cancelar" OnClick="Cancel"></SfButton>
+        </FormButtons>
+    </SfDataForm>
+</div>
+
+
+
+@code {
+    [Parameter]
+    public string UserId { get; set; }
+    private List<string>? selectedRoles = null;
+    private List<Guid>? selectedFilial = null;
+    private bool isLoading;
+    private UserProfileResponse User = new UserProfileResponse();
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        try
+        {
+            await base.OnInitializedAsync();
+            var resulUser = await _userService.GetUserByid(UserId);
+            if (resulUser.IsSuccess)
+            {
+                User = resulUser.Data;
+                selectedRoles = User.Roles.Where(x => x.Select).Select(x => x.Id).ToList();
+                selectedFilial = User.Filiais.Where(x => x.Select).Select(x => x.Id).ToList();
+            }
+
+        }
+        finally
+        {
+            isLoading = false;
+        }
+
+        StateHasChanged();
+    }
+    private async Task Submit(UserProfileResponse args)
+    {
+        try
+        {
+            var result = await _userService.EditUser(new UpdateUserProfileRequest
+                {
+                    Id = args.Id,
+                    Email = args.Email,
+                    Name = args.Name,
+                    Password = args.Password,
+                    Username = args.UserName,
+                    Status = args.Status,
+                    Roles = args.Roles.Where(x => selectedRoles.Contains(x.Id)).Select(x => new Role { Id = x.Id, Name = x.Name }).ToList(),
+                    Filiais = args.Filiais.Where(x => selectedFilial.Contains(x.Id))
+                             .Select(x => new Filial
+                             {
+                                 Id = x.Id,
+                                 Name = x.Name,
+                                 IdCompany = x.IdCompany,
+                                 Description = x.Description
+                             })
+                             .ToList(),
+                    Registration = args.Registration
+                });
+
+            if (result.IsSuccess)
+            {
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = Summary.Success,
+                        Detail = "Usuário atualizado",
+                        Duration = 4000
+                    });
+
+                DialogService.Close(result.Data);
+            }
+            else if (result.Errors is not null)
+            {
+                foreach (var error in result.Errors)
+                {
+                    NotificationService.Notify(new NotificationMessage
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = Summary.Error,
+                            Detail = error,
+                            Duration = 4000
+                        });
+                }
+            }
+            else
+            {
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = Summary.Error,
+                        Detail = "Erro ao atualizar Usuário",
+                        Duration = 4000
+                    });
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    void Cancel()
+    {
+        DialogService.Close(null);
+    }
+}

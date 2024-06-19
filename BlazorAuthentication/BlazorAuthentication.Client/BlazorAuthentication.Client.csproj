@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="Radzen.Blazor" Version="4.32.7" />
     <PackageReference Include="RestSharp" Version="111.2.0" />
+    <PackageReference Include="Syncfusion.Blazor" Version="26.1.35" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.0" />
   </ItemGroup>
 

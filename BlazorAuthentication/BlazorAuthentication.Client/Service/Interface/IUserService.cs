@@ -6,5 +6,7 @@ namespace BlazorAuthentication.Client.Service.Interface
     {
         Task<ResponseDto<Page<UserProfileResponse>>> GetListUser(UserPage userPage);
         Task<ResponseDto<RegisterUserResponse>> CreateUser(RegisterUserRequest registerUserRequest);
+        Task<ResponseDto<UserProfileResponse>> EditUser(UpdateUserProfileRequest updateUserProfileRequest);
+        Task<ResponseDto<UserProfileResponse>> GetUserByid(string id);
     }
 }

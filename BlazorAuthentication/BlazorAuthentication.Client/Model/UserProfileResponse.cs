@@ -11,6 +11,8 @@ namespace BlazorAuthentication.Client.Model
         public bool Status { get; set; }
         public string? Password { get; set; } = string.Empty;
         public string? Name { get; set; } = string.Empty;
+        public List<SelectRole>? Roles { get; set; } = null!;
 
+        public List<SelectFilial>? Filiais { get; set; } = null!;
     }
 }

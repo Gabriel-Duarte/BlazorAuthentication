@@ -1,6 +1,6 @@
 ﻿@page "/userindexWebAssembly"
 
-@attribute [StreamRendering(false)]
+@* @attribute [StreamRendering(false)] *@
 @* (SSR Server Side Rendering) Se sua página ou componente não declara de forma explícita que ele é interativo, o Blazor automaticamente renderizará ele usando SSR.
 Nesse modo toda a página é gerada no servidor, ou seja, HTML, CSS e JS, e depois enviado para renderização *@
 
@@ -17,7 +17,7 @@ Nesse modo toda a página é gerada no servidor, ou seja, HTML, CSS e JS, e depo
 
 @inject IUserService _userService
 
-<CascadingAuthenticationState>
+@* <CascadingAuthenticationState> *@
     <AuthorizeView>
         <Authorized>
             <div class="row">
@@ -33,15 +33,15 @@ Nesse modo toda a página é gerada no servidor, ou seja, HTML, CSS e JS, e depo
                                     AllowFiltering="false"
                                     AllowPaging="true"
                                     PageSize="Size"
-                                    PagerHorizontalAlign="HorizontalAlign.Center"
+                                    PagerHorizontalAlign="Radzen.HorizontalAlign.Center"
                                     TItem="UserProfileResponse"
                                     ColumnWidth="200px"
                                     EmptyText="Texto nao encontrado">
                         <Columns>
-                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="TextAlign.Center" Property="Name" Title="Nome" Width="160px" />
-                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="TextAlign.Center" Property="Email" Title="Email" Width="160px" />
-                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="TextAlign.Center" Property="UserName" Title="Usuários" Width="160px" />
-                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="TextAlign.Center" Property="Registration" Title="Matrícula" Width="160px" />
+                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="Radzen.TextAlign.Center" Property="Name" Title="Nome" Width="160px" />
+                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="Radzen.TextAlign.Center" Property="Email" Title="Email" Width="160px" />
+                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="Radzen.TextAlign.Center" Property="UserName" Title="Usuários" Width="160px" />
+                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="Radzen.TextAlign.Center" Property="Registration" Title="Matrícula" Width="160px" />
 
                         </Columns>
                     </RadzenDataGrid>
@@ -52,7 +52,7 @@ Nesse modo toda a página é gerada no servidor, ou seja, HTML, CSS e JS, e depo
             <Redirect />
         </NotAuthorized>
     </AuthorizeView>
-</CascadingAuthenticationState>
+@* </CascadingAuthenticationState> *@
 @code {
 
     private int count;
@@ -79,7 +79,7 @@ Nesse modo toda a página é gerada no servidor, ou seja, HTML, CSS e JS, e depo
             isLoading = true;
             try
             {
-
+                await base.OnInitializedAsync();
                 await GetUser(new UserPage { Page = 1, Size = Size, Sort = "", Direction = 1 });
 
 

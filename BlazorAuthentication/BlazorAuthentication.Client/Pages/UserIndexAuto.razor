@@ -12,7 +12,7 @@
 
 @inject IUserService _userService
 
-<CascadingAuthenticationState>
+@* <CascadingAuthenticationState> *@
     <AuthorizeView>
         <Authorized>
             <div class="row">
@@ -41,15 +41,15 @@
                                     AllowFiltering="false"
                                     AllowPaging="true"
                                     PageSize="Size"
-                                    PagerHorizontalAlign="HorizontalAlign.Center"
+                                    PagerHorizontalAlign="Radzen.HorizontalAlign.Center"
                                     TItem="UserProfileResponse"
                                     ColumnWidth="200px"
                                     EmptyText="Texto nao encontrado">
                         <Columns>
-                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="TextAlign.Center" Property="Name" Title="Nome" Width="160px" />
-                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="TextAlign.Center" Property="Email" Title="Email" Width="160px" />
-                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="TextAlign.Center" Property="UserName" Title="Usuários" Width="160px" />
-                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="TextAlign.Center" Property="Registration" Title="Matrícula" Width="160px" />
+                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="Radzen.TextAlign.Center" Property="Name" Title="Nome" Width="160px" />
+                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="Radzen.TextAlign.Center" Property="Email" Title="Email" Width="160px" />
+                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="Radzen.TextAlign.Center" Property="UserName" Title="Usuários" Width="160px" />
+                            <RadzenDataGridColumn TItem="UserProfileResponse" TextAlign="Radzen.TextAlign.Center" Property="Registration" Title="Matrícula" Width="160px" />
 
                         </Columns>
                     </RadzenDataGrid>
@@ -60,7 +60,7 @@
             <Redirect />
         </NotAuthorized>
     </AuthorizeView>
-</CascadingAuthenticationState>
+@* </CascadingAuthenticationState> *@
 
 @code {
 
@@ -72,7 +72,7 @@
     private string? selectedRole = null;
 
     private bool isLoading = true;
-    private int Size = 10;
+    private int Size = 5;
     private int CurrentPage = 1;
 
     private string? filterName = null;
@@ -87,6 +87,7 @@
             isLoading = true;
             try
             {
+                await base.OnInitializedAsync();
                 await GetUser(new UserPage { Page = 1, Size = Size, Sort = "", Direction = 1 });
 
             }

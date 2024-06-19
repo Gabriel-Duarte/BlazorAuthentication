@@ -1,0 +1,229 @@
+﻿@page "/userindexSf"
+@rendermode InteractiveAuto
+@attribute [StreamRendering(false)]
+
+@using BlazorAuthentication.Client.Model
+@using BlazorAuthentication.Client.Service.Interface
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Grids
+@using Microsoft.AspNetCore.Components.Authorization
+@using Syncfusion.Blazor.Navigations
+@inject DialogService DialogService
+@inject NotificationService NotificationService
+@inject IUserService _userService
+
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            <div class="row">
+                <h1 class="text-center">Lista de Usuários Auto</h1>
+                <br />
+                <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0; width: 100%; box-sizing: border-box;" />
+                <br />
+                <div class="filter-container d-flex align-items-center justify-content-end" style="gap: 15px;">
+                    <SfButton IconCss="e-icons e-plus-icon"
+                              CssClass="e-primary"
+                              IsPrimary="true"
+                              Style="width: auto; max-width: 100%; height: 40px; border-radius: 10px; padding: 10px 20px;"
+                              @onclick="OnUserCreate">
+                        Novo Usuário
+                    </SfButton>
+                </div>
+                <br />
+                <div class="d-flex flex-column gap-3">
+                    <div style="display: flex; flex-direction: column; align-items: stretch;">
+                        <SfGrid @ref="Grid" DataSource="@UserList" AllowSorting="true" AllowFiltering="true" AllowGrouping="false">
+                            <GridTemplates>
+                                <EmptyRecordTemplate Context="emptyContext">
+                                    <span>Nenhum arquivo encontrado</span>
+                                </EmptyRecordTemplate>
+                            </GridTemplates>
+                            <GridColumns>
+                                <GridColumn Field=@nameof(UserProfileResponse.Name) HeaderText="Nome" Width="120"></GridColumn>
+                                <GridColumn Field=@nameof(UserProfileResponse.Email) HeaderText="Email" Width="150"></GridColumn>
+                                <GridColumn Field=@nameof(UserProfileResponse.UserName) HeaderText="Username" Width="130"></GridColumn>
+                                <GridColumn Field=@nameof(UserProfileResponse.Registration) HeaderText="Data de Registro" Format="d" Type="ColumnType.Date" Width="120"></GridColumn>
+                                <GridColumn HeaderText="Editar" Width="120">
+                                    <Template Context="userContext">
+                                        @{
+                                            var User = (userContext as UserProfileResponse);
+                                        }
+                                        <SfButton IconCss="e-icons e-edit-icon"
+                                                  CssClass="e-primary"
+                                                  IsPrimary="true"
+                                                  Style="width: auto; max-width: 100%; height: 40px; border-radius: 10px; padding: 10px 20px;"
+                                                  @onclick="(() => OnEditUser(User.Id))">
+                                        </SfButton>
+                                    </Template>
+                                </GridColumn>
+                            </GridColumns>
+                        </SfGrid>
+                        <SfPager @ref="Page" PageSize="@Size" NumericItemsCount="Size" TotalItemsCount="@count" ShowAllInPageSizes="true" ItemClick="PageSize">
+                        </SfPager>
+                    </div>
+                </div>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <Redirect />
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+
+<style>
+    .e-plus-icon::before {
+        content: '\e805';
+    }
+
+    .e-edit-icon::before {
+        content: '\e730';
+    }
+</style>
+
+@code {
+    public int SkipValue;
+
+
+    public SfPager Page { get; set; }
+    private int count;
+    private List<UserProfileResponse> UserList = new();
+    private SfGrid<UserProfileResponse> Grid;
+    private bool isLoading = true;
+    private int Size = 4;
+    private int CurrentPage = 1;
+    private string? selectedRole = null;
+    private string? filterName = null;
+    private string? filterUsername = null;
+    private string? filterEmail = null;
+    private string? filterRegistration = null;
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     isLoading = true;
+    //     try
+    //     {
+    //         await base.OnInitializedAsync();
+    //         await GetUser(new UserPage { Page = 1, Size = Size });
+    //     }
+    //     finally
+    //     {
+    //         isLoading = false;
+    //     }
+    // }
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isLoading = true;
+            try
+            {
+                await base.OnInitializedAsync();
+                await GetUser(new UserPage { Page = 1, Size = Size });
+            }
+            finally
+            {
+                isLoading = false;
+            }
+            StateHasChanged();
+        }
+    }
+    private async Task GetUser(UserPage request)
+    {
+        request.Email = filterEmail;
+        request.Search = filterUsername;
+        request.Name = filterName;
+        request.Registration = filterRegistration;
+        request.Role = selectedRole;
+
+        var result = await _userService.GetListUser(request);
+
+        if (result.IsSuccess)
+        {
+            count = result.Data.TotalElements;
+            UserList = result.Data.Content;
+            StateHasChanged();
+        }
+        else
+        {
+            NotifyErrors(result.Errors);
+        }
+    }
+
+    private void NotifyErrors(IEnumerable<string> errors)
+    {
+        foreach (var error in errors)
+        {
+            NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Erro",
+                    Detail = error,
+                    Duration = 4000
+                });
+        }
+    }
+
+    public async Task PageSize(PagerItemClickEventArgs args)
+    {
+
+        SkipValue = args.CurrentPage;
+        Size = Page.PageSize;
+        UserPage userPage = new UserPage
+            {
+                Page = SkipValue,
+                Size = Size
+            };
+        await GetUser(userPage);
+    }
+
+    private async void Search()
+    {
+        await GetUser(new UserPage { Page = 1, Size = Size });
+        await Grid.Refresh();
+        StateHasChanged();
+    }
+
+    public async Task OnUserCreate()
+    {
+        var dialogResult = await DialogService.OpenAsync<CreateUserSyncfusion>("Novo Usuário", null,
+            new DialogOptions
+                {
+                    Width = ModalState.Medium,
+                    CloseDialogOnEsc = ModalState.CloseDialogOnEsc,
+                    Draggable = ModalState.Draggable,
+                    Resizable = ModalState.Resizable,
+                    Height = "76%",
+                    ShowClose = ModalState.ShowClose
+                });
+
+        if (dialogResult != null)
+        {
+            await GetUser(new UserPage { Page = SkipValue, Size = Size });
+            await Grid.Refresh();
+            StateHasChanged();
+        }
+    }
+    public async Task OnEditUser(string UserId)
+    {
+        var parameter = new Dictionary<string, object>() {
+                { "UserId", UserId } };
+
+        var dialogResult = await DialogService.OpenAsync<EditUserSyncfusion>("Editar Usuário", parameter,
+            new DialogOptions
+                {
+                    Width = ModalState.Medium,
+                    CloseDialogOnEsc = ModalState.CloseDialogOnEsc,
+                    Draggable = ModalState.Draggable,
+                    Resizable = ModalState.Resizable,
+                    Height = "76%",
+                    ShowClose = ModalState.ShowClose
+                });
+
+        if (dialogResult != null)
+        {
+            await GetUser(new UserPage { Page = SkipValue, Size = Size });
+            await Grid.Refresh();
+            StateHasChanged();
+        }
+    }
+}

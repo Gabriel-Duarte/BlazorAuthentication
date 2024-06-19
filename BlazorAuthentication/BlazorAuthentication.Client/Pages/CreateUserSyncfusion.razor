@@ -1,0 +1,197 @@
+﻿@rendermode InteractiveAuto
+
+@using BlazorAuthentication.Client.Model
+@using BlazorAuthentication.Client.Service.Interface
+@using Syncfusion.Blazor.DataForm
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Notifications
+@using Microsoft.AspNetCore.Components.Authorization
+
+
+@inject DialogService DialogService
+@inject IRoleService _roleService
+@inject NotificationService NotificationService
+@inject IFilialService _filialService
+@inject IUserService _userService
+
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            <div class="container">
+                <SfDataForm ID="MyForm" Model="@newUser">
+                    <FormValidator>
+                        <DataAnnotationsValidator></DataAnnotationsValidator>
+                    </FormValidator>
+                    <FormItems>
+                        <FormItem Field="@nameof(newUser.Name)" LabelText="Nome" Placeholder="Nome">
+                        </FormItem>
+
+                        <FormItem Field="@nameof(newUser.Registration)" LabelText="Matrícula" Placeholder="Matrícula">
+                        </FormItem>
+
+                        <FormItem Field="@nameof(newUser.Username)" LabelText="Usuário" Placeholder="Usuário">
+                        </FormItem>
+
+                        <FormItem Field="@nameof(newUser.Password)" LabelText="Senha" Placeholder="Senha">
+
+                        </FormItem>
+
+                        <FormItem Field="@nameof(newUser.Email)" LabelText="Email" Placeholder="Email">
+                        </FormItem>
+                        <FormItem Field="@nameof(newUser.Roles)" LabelText="Perfil" Placeholder="Selecione um Perfil">
+                            <Template >
+                                <label style=" font-size: 12px">Roles</label>
+                                <SfMultiSelect @bind-Value="selectedRoles"  DataSource="@RoleList" TItem="Role" TValue="List<string>" Placeholder="Selecione um Perfil" AllowFiltering="true" FilterType="Syncfusion.Blazor.DropDowns.FilterType.StartsWith">
+                                    <MultiSelectFieldSettings Text="Name" Value="Id"></MultiSelectFieldSettings>
+                                </SfMultiSelect>
+                                <ValidationMessage For="@(() => selectedRoles)" TValue="List<string>"></ValidationMessage>
+                            </Template>
+                        </FormItem>
+
+
+                        <FormItem Field="@nameof(newUser.Filiais)" LabelText="Local" Placeholder="Selecione um Local">
+                            <Template>
+                                <label style=" font-size: 12px">Filiais</label>
+                                <SfMultiSelect @bind-Value="selectedFilial" DataSource="@FilialList" TItem="ListFilialResponse" TValue="List<Guid>" Placeholder="Selecione um Local" AllowFiltering="true" FilterType="Syncfusion.Blazor.DropDowns.FilterType.StartsWith">
+                                    <MultiSelectFieldSettings Text="Name" Value="Id"></MultiSelectFieldSettings>
+                                </SfMultiSelect>
+                            </Template>
+                        </FormItem>
+                    </FormItems>
+                    <FormButtons>
+                        <SfButton OnClick="Submit" Content="Criar Usuário" CssClass="e-primary"></SfButton>
+                        <SfButton  Content="Cancelar" OnClick="Cancel"></SfButton>
+                    </FormButtons>
+                </SfDataForm>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <Redirect />
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>
+
+@code {
+    private List<Role> RoleList = new();
+    private List<ListFilialResponse> FilialList = new();
+    private List<string> selectedRoles = new();
+    private List<Guid> selectedFilial = new();
+    private bool isLoading;
+
+    private RegisterUserRequest newUser = new RegisterUserRequest();
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        try
+        {
+            var resultRole = await _roleService.GetListRole();
+            if (resultRole.IsSuccess)
+            {
+                RoleList = resultRole.Data.RolesDto;
+            }
+            else
+            {
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Erro",
+                        Detail = "Falha ao buscar perfis",
+                        Duration = 4000
+                    });
+            }
+
+            var resultFilial = await _filialService.GetListFilial(new FilialPage { Page = 1, Size = 400 });
+            if (resultFilial.IsSuccess)
+            {
+                FilialList = resultFilial.Data.Content;
+            }
+            else
+            {
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Erro",
+                        Detail = "Falha ao buscar filiais",
+                        Duration = 4000
+                    });
+            }
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task Submit()
+    {
+        try
+        {
+            newUser.Roles = RoleList.Where(x => selectedRoles.Contains(x.Id)).ToList();
+            newUser.Filiais = FilialList
+                .Where(x => selectedFilial.Contains(x.Id))
+                .Select(x => new Filial
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                        IdCompany = x.IdCompany,
+                        Description = x.Description
+                    })
+                .ToList();
+
+            var result = await _userService.CreateUser(newUser);
+            if (result.IsSuccess)
+            {
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Sucesso",
+                        Detail = "Usuário criado",
+                        Duration = 4000
+                    });
+
+                DialogService.Close(result.Data);
+            }
+            else if (result.Errors != null)
+            {
+                foreach (var error in result.Errors)
+                {
+                    NotificationService.Notify(new NotificationMessage
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Erro",
+                            Detail = error,
+                            Duration = 4000
+                        });
+                }
+            }
+            else
+            {
+                NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Erro",
+                        Detail = "Erro ao criar Usuário",
+                        Duration = 4000
+                    });
+            }
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Erro",
+                    Detail = ex.Message,
+                    Duration = 4000
+                });
+        }
+    }
+
+    private void Cancel()
+    {
+        DialogService.Close(null);
+    }
+}
