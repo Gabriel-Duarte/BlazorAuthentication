@@ -10,46 +10,65 @@
 <RadzenContextMenu @rendermode="@RenderMode.InteractiveServer" />
 <RadzenTooltip @rendermode="@RenderMode.InteractiveServer" />
 
-@*<Authenticated />  *@
 
-@*   <CascadingAuthenticationState> *@
-  
-            <div class="page">
-        <AuthorizeView>
-            <Authorized>
-                <div class="sidebar">
-                    <NavMenu />
-                </div>
+
+<div class="page">
+    <AuthorizeView>
+        <Authorized>
+            <div class="sidebar">
+                <NavMenu />
+            </div>
         </Authorized>
     </AuthorizeView>
-                <main>
-                     <AuthorizeView>
+    <main>
+        <AuthorizeView>
             <Authorized>
-            <div class="top-row px-4">
-                        <div class="col-6 d-flex align-items-center justify-content-end">
-                            <RadzenProfileMenu Style="position: relative; z-index: 1000;">
-                                <ChildContent>
-                                    <RadzenProfileMenuItem Text="Sair" Icon="power_settings_new" Path="logout" />
-                                    <RadzenLabel Text="@($"{"Versão: " + (System.Reflection.Assembly.GetEntryAssembly().GetName().Version)}")" />
-                                </ChildContent>
-                                <Template>
-                                    <RadzenImage Path="images/user.png" style="border-radius: 16px; height: 32px; width: 32px" />
-                                </Template>
-                            </RadzenProfileMenu>
-                        </div>
-            </div>
-                </Authorized>
-            </AuthorizeView>
-                    <article class="content px-4">
-                        @Body
-                    </article>
-                </main>
-            </div>
-  
-@* </CascadingAuthenticationState> *@
+                <div class="top-row px-4">
+                    <p>Welcome, @username</p>
+                    <div class="col-6 d-flex align-items-center justify-content-end">
+                        <RadzenProfileMenu Style="position: relative; z-index: 1000;">
+                            <ChildContent>
+                                <RadzenProfileMenuItem Text="Sair" Icon="power_settings_new" Path="logout" />
+                                <RadzenLabel Text="@($"{"Versão: " + (System.Reflection.Assembly.GetEntryAssembly().GetName().Version)}")" />
+                            </ChildContent>
+                            <Template>
+                                <RadzenImage Path="images/user.png" style="border-radius: 16px; height: 32px; width: 32px" />
+                            </Template>
+                        </RadzenProfileMenu>
+                    </div>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
 
+@code {
+    private string username;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            var uniqueNameClaim = user.Claims.FirstOrDefault(c => c.Type == "unique_name");
+
+            if (uniqueNameClaim != null)
+            {
+                username = uniqueNameClaim.Value;
+
+            }
+        }
+    }
+}

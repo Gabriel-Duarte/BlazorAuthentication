@@ -1,0 +1,56 @@
+﻿
+@using BlazorAuthentication.Client.Model
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Charts
+
+<SfCard>
+    <SfChart>
+        <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.Category">
+            <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+            <ChartAxisLabelStyle Size="11px"></ChartAxisLabelStyle>
+        </ChartPrimaryXAxis>
+        <ChartPrimaryYAxis Minimum="0">
+            <ChartAxisMajorTickLines Width="0"></ChartAxisMajorTickLines>
+            <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
+            <ChartAxisLabelStyle Size="11px"></ChartAxisLabelStyle>
+        </ChartPrimaryYAxis>
+        <ChartSeriesCollection>
+            <ChartSeries DataSource="@conformidade" XName="Day" YName="Fornecedor" Name="Fornecedor" Fill="orange" Type="ChartSeriesType.Column">
+                <ChartMarker>
+                    <ChartDataLabel Visible="true" Position="LabelPosition.Middle">
+                        <ChartDataLabelFont Color="#FFFFFF"></ChartDataLabelFont>
+                    </ChartDataLabel>
+                </ChartMarker>
+            </ChartSeries>
+            <ChartSeries DataSource="@conformidade" XName="Day" YName="Contagem" Name="Contagem" Fill="blue" Type="ChartSeriesType.Column">
+                <ChartMarker>
+                    <ChartDataLabel Visible="true" Position="LabelPosition.Middle">
+                        <ChartDataLabelFont Color="#FFFFFF"></ChartDataLabelFont>
+                    </ChartDataLabel>
+                </ChartMarker>
+            </ChartSeries>
+        </ChartSeriesCollection>
+    </SfChart>
+</SfCard>
+
+@code {
+    [Parameter]
+    public List<Conformidades> conformidades { get; set; }
+    private List<Conformidades> conformidade = new List<Conformidades>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        // Inicialize os dados aqui
+        conformidade = new List<Conformidades>
+        {
+            new Conformidades { Day = "10/03", Fornecedor = 19, Contagem = 14 },
+            new Conformidades { Day = "11/03", Fornecedor = 12, Contagem = 18 },
+            new Conformidades { Day = "12/03", Fornecedor = 9, Contagem = 23 },
+            new Conformidades { Day = "13/03", Fornecedor = 15, Contagem = 15 },
+            new Conformidades { Day = "14/03", Fornecedor = 10, Contagem = 5 },
+            new Conformidades { Day = "15/03", Fornecedor = 4, Contagem = 29 },
+        };
+    }
+
+}

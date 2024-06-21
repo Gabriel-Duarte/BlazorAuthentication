@@ -1,0 +1,383 @@
+﻿@page "/dashboardSyncfusion"
+@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+@using BlazorAuthentication.Client.Model
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Charts
+@inject DialogService DialogService
+
+<div class="row mt-4">
+    <div class="col-md-4 d-flex align-items-stretch">
+        <SfCard class="flex-fill" Style="padding: 20px;">
+            <div class="d-flex justify-content-between">
+                <h5>Performance</h5>
+                <SfIcon CssClass="e-icons e-assessment" Style="font-size: 24px; cursor: pointer; display: inline-block;" @onclick="OnConformidades"></SfIcon>
+            </div>
+            <div class="mt-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div>Pallets/Hora</div>
+                        <div style="font-size: 24px; font-weight: bold;">17 <span style="font-size: 14px; color: green;  ">▲188%</span></div>
+                        <div>meta: 9</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div>Média Geral</div>
+                        <div style="font-size: 24px; font-weight: bold;">2</div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div>Melhor Período (dia)</div>
+                        <div style="font-size: 24px; font-weight: bold;">16</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div>Período Anterior (dia)</div>
+                        <div style="font-size: 24px; font-weight: bold;">4</div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div>Pior Período (dia)</div>
+                        <div style="font-size: 24px; font-weight: bold;">14</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div>Total de Pallets</div>
+                        <div style="font-size: 24px; font-weight: bold;">429</div>
+                    </div>
+                </div>
+            </div>
+        </SfCard>
+    </div>
+    <div class="col-md-4 d-flex align-items-stretch">
+        <SfCard class="flex-fill" Style="padding: 20px;">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5>Recebimentos</h5>
+                <SfIcon CssClass="e-icons e-assessment" Style="font-size: 24px; cursor: pointer; display: inline-block;" @onclick="OnConformidades"></SfIcon>
+
+            </div>
+            <div class="mt-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div>Recebimentos</div>
+                        <div style="font-size: 24px; font-weight: bold;">16 <span style="font-size: 14px; color: green; ">▲1600%</span></div>
+                        <div>meta: 1</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div>Média Geral (por dia)</div>
+                        <div style="font-size: 24px; font-weight: bold;">7</div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div>Melhor Período (dia)</div>
+                        <div style="font-size: 24px; font-weight: bold;">11</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div>Período Anterior (dia)</div>
+                        <div style="font-size: 24px; font-weight: bold;">12</div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div>Pior Período (dia)</div>
+                        <div style="font-size: 24px; font-weight: bold;">13</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div>Melhor dia da semana</div>
+                        <div style="font-size: 24px; font-weight: bold;">Quarta-feira</div>
+                    </div>
+                </div>
+            </div>
+        </SfCard>
+    </div>
+    <div class="col-md-4 d-flex align-items-stretch">
+        <SfCard class="flex-fill" Style="padding: 20px;">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5>Tempo de Trabalho</h5>
+                <SfIcon CssClass="e-icons e-assessment" Style="font-size: 24px; cursor: pointer; display: inline-block;" @onclick="OnConformidades"></SfIcon>
+            </div>
+            <div class="mt-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div>Tempo de trabalho</div>
+                        <div style="font-size: 24px; font-weight: bold;">6h <span style="font-size: 14px; color: red;">▼42%</span></div>
+                        <div>Capacidade: 3h</div>
+                        <div>Meta: 14h</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div>Média por recebimentos</div>
+                        <div style="font-size: 24px; font-weight: bold;">2h</div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div>Lead Time</div>
+                        <div>(tempo total de conf por carga)</div>
+                        <div style="font-size: 24px; font-weight: bold;">Hoje</div>
+                        <div style="font-size: 24px; font-weight: bold;">6h <span style="font-size: 14px; color: green;">▲1,000%</span></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div>Média Geral (por dia)</div>
+                        <div style="font-size: 24px; font-weight: bold;">12h</div>
+                    </div>
+                </div>
+            </div>
+        </SfCard>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4 d-flex align-items-stretch">
+        <SfCard class="flex-fill" Style="padding: 20px;">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5>Painel de não conformidades</h5>
+                <SfIcon CssClass="e-icons e-assessment" Style="font-size: 24px; cursor: pointer; display: inline-block;" @onclick="OnConformidades"></SfIcon>
+            </div>
+            <div class="mt-3">
+                <SfAccumulationChart>
+                    <AccumulationChartSeriesCollection>
+                        <AccumulationChartSeries DataSource="@data" XName="Category" YName="Value" >
+                            <AccumulationChartSeriesBorder Color="white" Width="2"></AccumulationChartSeriesBorder>
+                        </AccumulationChartSeries>
+                    </AccumulationChartSeriesCollection>
+                    <AccumulationChartLegendSettings Visible="true"></AccumulationChartLegendSettings>
+                </SfAccumulationChart>
+                <div class="mt-3">
+                    <div>Não Conformidades</div>
+                    <div style="font-size: 24px; font-weight: bold;">21% <span>(151)</span> <span style="font-size: 14px; color: green;">▲1,200%</span></div>
+                </div>
+                <div class="mt-3">
+                    <div><span style="color: blue;">&#9679;</span> 86 - Não conformidade do fornecedor.</div>
+                    <div><span style="color: green;">&#9679;</span> 65 - Não conformidade de contagem (ver operadores)</div>
+                </div>
+            </div>
+        </SfCard>
+    </div>
+    <div class="col-md-8 d-flex flex-column">
+        <SfCard class="flex-fill mb-4" Style="padding: 20px;">
+            <h5>Operadores em Atividade</h5>
+            <RadzenDataGrid Data="@operators" TItem="Operator" Style="width: 100%;">
+                <Columns>
+                    <RadzenDataGridColumn TItem="Operator" Property="Name" Title="NOME" />
+                    <RadzenDataGridColumn TItem="Operator" Property="WorkHours" Title="H.TRAB" />
+                    <RadzenDataGridColumn TItem="Operator" Property="ConfHours" Title="H. EM CONF" />
+                    <RadzenDataGridColumn TItem="Operator" Property="PerfPallets" Title="PERF. PALLET" />
+                    <RadzenDataGridColumn TItem="Operator" Property="AvgPallets" Title="MEDIA" />
+                    <RadzenDataGridColumn TItem="Operator" Property="DailyAccuracy" Title="ACUR. DIA" />
+                    <RadzenDataGridColumn TItem="Operator" Property="Accuracy" Title="ACURACIA" />
+                </Columns>
+            </RadzenDataGrid>
+        </SfCard>
+        <SfCard class="flex-fill" Style="padding: 20px;">
+            <h5>Não conformidades</h5>
+            <div class="row mt-3">
+                <div class="col-md-4 border-end">
+                    <strong>FORNECEDORES</strong>
+                    <div>Fornecedor X - 43 NC</div>
+                    <div>Fornecedor Y - 14 NC</div>
+                    <div>Fornecedor Z - 32 NC</div>
+                </div>
+                <div class="col-md-4 border-end">
+                    <strong>OPERADORES</strong>
+                    <div>Operador 1 - 57 NC</div>
+                    <div>Operador 2 - 35 NC</div>
+                    <div>Operador 3 - 2 NC</div>
+                </div>
+                <div class="col-md-4">
+                    <strong>PALLETS</strong>
+                    <div>Pallets não conformidades</div>
+                    <div style="font-size: 24px; font-weight: bold;">11/919</div>
+                    <div>Pallets sem divergência</div>
+                    <div style="font-size: 24px; font-weight: bold;">908/919 <span style="font-size: 14px; color: red;">▼25%</span></div>
+                </div>
+            </div>
+        </SfCard>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-3 d-flex align-items-stretch mb-4">
+        <SfCard class="flex-fill" Style="padding: 20px;">
+            <h5>Tipo de Unitização</h5>
+            <div class="d-flex align-items-center mt-3">
+                <div style="color: #A64AC9;">&#9679;</div>
+                <div class="ms-2">Unitário</div>
+                <div class="ms-auto" style="font-size: 24px; font-weight: bold;">6</div>
+            </div>
+            <div class="d-flex align-items-center mt-3">
+                <div style="color: #66BB6A;">&#9679;</div>
+                <div class="ms-2">Misto/Solto</div>
+                <div class="ms-auto" style="font-size: 24px; font-weight: bold;">11</div>
+            </div>
+            <RadzenChart Style="height: 200px;">
+                <RadzenDonutSeries Data="@unitizationData" CategoryProperty="Category" ValueProperty="Value" Fills="@unitizationColors" />
+            </RadzenChart>
+        </SfCard>
+    </div>
+    <div class="col-md-3 d-flex align-items-stretch mb-4">
+        <SfCard class="flex-fill" Style="padding: 20px;">
+            <h5>Tipo de Paletização</h5>
+            <div class="d-flex align-items-center mt-3">
+                <div style="color: #A64AC9;">&#9679;</div>
+                <div class="ms-2">Batido</div>
+                <div class="ms-auto" style="font-size: 24px; font-weight: bold;">7</div>
+            </div>
+            <div class="d-flex align-items-center mt-3">
+                <div style="color: #FFB74D;">&#9679;</div>
+                <div class="ms-2">Paletizada</div>
+                <div class="ms-auto" style="font-size: 24px; font-weight: bold;">13</div>
+            </div>
+            <div class="d-flex align-items-center mt-3">
+                <div style="color: #7E57C2;">&#9679;</div>
+                <div class="ms-2">Batido/Paletizado</div>
+                <div class="ms-auto" style="font-size: 24px; font-weight: bold;">14</div>
+            </div>
+            <RadzenChart Style="height: 200px;">
+                <RadzenDonutSeries Data="@palletizationData" CategoryProperty="Category" ValueProperty="Value" Fills="@palletizationColors" />
+            </RadzenChart>
+        </SfCard>
+    </div>
+    <div class="col-md-6  align-items-stretch mb-4">
+        <SfCard class="flex-fill" Style="padding: 20px;">
+            <h5>Metas e Andamento</h5>
+            <div class="row">
+                <div class="col-md-4">
+                    <div>Recebidos</div>
+                    <div style="font-size: 24px; font-weight: bold;">5/19</div>
+                </div>
+                <div class="col-md-4">
+                    <div>Tempo de Trabalho</div>
+                    <div style="font-size: 24px; font-weight: bold;">15h/20h</div>
+                </div>
+                <div class="col-md-4">
+                    <div>Pallets</div>
+                    <div style="font-size: 24px; font-weight: bold;">15/5</div>
+                </div>
+            </div>
+            <RadzenChart Style="height: 300px;">
+                <RadzenCategoryAxis>
+
+                </RadzenCategoryAxis>
+                <RadzenValueAxis Min="0">
+
+                </RadzenValueAxis>
+                <RadzenColumnSeries Data=@metasData CategoryProperty="Category" Title="Meta" ValueProperty="Meta" Fill="orange" />
+                <RadzenColumnSeries Data=@metasData CategoryProperty="Category" Title="Andamento" ValueProperty="Andamento" Fill="blue" />
+                <RadzenColumnOptions Radius="5" />
+            </RadzenChart>
+        </SfCard>
+    </div>
+</div>
+
+@code {
+    private List<ChartData> data = new List<ChartData>
+    {
+        new ChartData { Category = "Não conformidade do fornecedor.", Value = 86 },
+        new ChartData { Category = "Não conformidade de contagem", Value = 65 }
+    };
+    private List<string> labelColors = new List<string>
+    {
+        "blue",
+        "green"
+    };
+
+    public class ChartData
+    {
+        public string Category { get; set; }
+        public int Value { get; set; }
+    }
+
+    private List<Operator> operators = new List<Operator>
+    {
+        new Operator { Name = "Operador 1", WorkHours = "10:43:44", ConfHours = "09:07:47", PerfPallets = "21 pallets/h", AvgPallets = "78 pallets/h", DailyAccuracy = "82%", Accuracy = "34%" },
+        new Operator { Name = "Operador 2", WorkHours = "11:33:05", ConfHours = "06:34:16", PerfPallets = "43 pallets/h", AvgPallets = "6 pallets/h", DailyAccuracy = "77%", Accuracy = "25%" },
+        new Operator { Name = "Operador 3", WorkHours = "06:05:12", ConfHours = "04:51:24", PerfPallets = "17 pallets/h", AvgPallets = "26 pallets/h", DailyAccuracy = "95%", Accuracy = "60%" }
+    };
+
+    public class Operator
+    {
+        public string Name { get; set; }
+        public string WorkHours { get; set; }
+        public string ConfHours { get; set; }
+        public string PerfPallets { get; set; }
+        public string AvgPallets { get; set; }
+        public string DailyAccuracy { get; set; }
+        public string Accuracy { get; set; }
+    }
+
+    private List<ChartData> unitizationData = new List<ChartData>
+    {
+        new ChartData { Category = "Unitário", Value = 6 },
+        new ChartData { Category = "Misto/Solto", Value = 11 }
+    };
+
+    private List<ChartData> palletizationData = new List<ChartData>
+    {
+        new ChartData { Category = "Batido", Value = 7 },
+        new ChartData { Category = "Paletizada", Value = 13 },
+        new ChartData { Category = "Batido/Paletizado", Value = 14 }
+    };
+
+
+
+    private List<string> unitizationColors = new List<string>
+    {
+        "#A64AC9", // Unitário
+        "#66BB6A"  // Misto/Solto
+    };
+
+    private List<string> palletizationColors = new List<string>
+    {
+        "#A64AC9", // Batido
+        "#FFB74D", // Paletizada
+        "#7E57C2"  // Batido/Paletizado
+    };
+
+    private List<MetasData> metasData = new List<MetasData>
+    {
+        new MetasData { Category = "Recebidos", Meta = 19, Andamento = 25 },
+        new MetasData { Category = "Tempo de Trabalho", Meta = 20, Andamento = 15 },
+        new MetasData { Category = "Pallets", Meta = 10, Andamento = 15 }
+    };
+
+    private List<Conformidades> conformidades = new List<Conformidades>
+    {
+        new Conformidades { Day = "10/03", Fornecedor = 19, Contagem = 14 },
+        new Conformidades { Day = "11/03", Fornecedor = 12, Contagem = 18 },
+       new Conformidades { Day = "12/03", Fornecedor = 9, Contagem = 23 },
+        new Conformidades { Day = "13/03", Fornecedor = 15, Contagem = 15 },
+         new Conformidades { Day = "14/03", Fornecedor = 10, Contagem = 5 },
+          new Conformidades { Day = "15/03", Fornecedor = 4, Contagem = 29 },
+    };
+
+    public class MetasData
+    {
+        public string Category { get; set; }
+        public int Meta { get; set; }
+        public int Andamento { get; set; }
+    }
+
+
+
+
+    public async Task OnConformidades()
+    {
+        var parameter = new Dictionary<string, object>() {
+                { "conformidades", conformidades } };
+
+        var dialogResult = await DialogService.OpenAsync<DashboardModal>("Painel de Não Conformidades", parameter,
+                                                   new DialogOptions()
+                                                       {
+                                                           Width = ModalState.Medium,
+                                                           CloseDialogOnEsc = ModalState.CloseDialogOnEsc,
+                                                           Draggable = ModalState.Draggable,
+                                                           Resizable = ModalState.Resizable,
+                                                           Height = "53%",
+                                                           ShowClose = ModalState.ShowClose
+                                                       });
+
+    }
+
+
+}

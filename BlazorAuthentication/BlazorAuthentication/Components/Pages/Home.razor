@@ -1,20 +1,8 @@
 ﻿@page "/home"
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
-<Authenticated />
-<PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
-
-<AuthorizeView>
-    <Authorized>
-        <p>Welcome, @username!</p>
-    </Authorized>
-    <NotAuthorized>
-        <p>You are not logged in.</p>
-    </NotAuthorized>
-</AuthorizeView>
-
+<DashboardGerais/>
 @code {
     private string username;
 

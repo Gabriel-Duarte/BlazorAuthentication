@@ -7,6 +7,7 @@
 @using BlazorAuthentication.Client.Model
 @using BlazorAuthentication.Client.Service.Interface
 
+@inject NavigationManager NavigationManager
 @inject DialogService DialogService
 @inject NotificationService NotificationService
 
@@ -28,7 +29,9 @@
                                   Style="width: auto; max-width: 100%; height: 40px; border-radius: 10px; padding: 10px 20px;"
                                   Click="OnUserCreate">
                     </RadzenButton>
-
+                <button class="btn btn-primary" @onclick="(()=>Nav())">
+                    Novo Usuário nav
+                </button>
                 </div>
                 <br />
                 <div class="d-flex flex-column gap-3">
@@ -141,6 +144,10 @@
         }
     }
 
+    private void Nav()
+    {
+        NavigationManager.NavigateTo("CreateUser");
+    }
 
     private async Task LoadData(LoadDataArgs args)
     {

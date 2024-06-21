@@ -1,0 +1,44 @@
+﻿@page "/teste"
+@using BlazorAuthentication.Client.Model
+@inject DialogService DialogService
+@rendermode InteractiveServer
+
+        <RadzenCard>     
+            <RadzenChart >
+                <RadzenValueAxis Min="0">
+                </RadzenValueAxis>
+                <RadzenColumnSeries Data=@conformidade CategoryProperty="Day" Title="Fornecedor" ValueProperty="Fornecedor" Fill="orange" />
+                <RadzenColumnSeries Data=@conformidade CategoryProperty="Day" Title="Contagem" ValueProperty="Contagem" Fill="blue" />
+                <RadzenColumnOptions Radius="5" />
+            </RadzenChart>
+        </RadzenCard>
+<RadzenButton Variant="Variant.Flat"
+              ButtonStyle="ButtonStyle.Light"
+              Shade="Shade.Lighter"
+              Icon="keyboard_return"
+              Text="Voltar"
+              Style="margin-left: auto; width: auto; max-width: 100%; height: 40px; padding: 10px 20px; border-radius: 10px; margin-top: 20px;"
+              Click="@Exit" />
+@code {
+    [Parameter]
+    public List<Conformidades> conformidades { get; set; }
+    private List<Conformidades> conformidade = new List<Conformidades>();
+    
+    protected override void OnInitialized()
+    { conformidade = new List<Conformidades>
+    {
+        new Conformidades { Day = "10/03", Fornecedor = 19, Contagem = 14 },
+        new Conformidades { Day = "11/03", Fornecedor = 12, Contagem = 18 },
+       new Conformidades { Day = "12/03", Fornecedor = 9, Contagem = 23 },
+        new Conformidades { Day = "13/03", Fornecedor = 15, Contagem = 15 },
+         new Conformidades { Day = "14/03", Fornecedor = 10, Contagem = 5 },
+          new Conformidades { Day = "15/03", Fornecedor = 4, Contagem = 29 },
+    };
+    }
+    private void Exit()
+    {
+        DialogService.Close(null);
+    }
+
+
+}
