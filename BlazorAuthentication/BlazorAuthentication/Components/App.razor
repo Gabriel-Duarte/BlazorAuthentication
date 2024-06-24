@@ -19,11 +19,37 @@
 
 <body>
     <div id="app" style="background-color: white;">
-        <Routes @rendermode="InteractiveServer"/>
+        <Routes  />
     </div>
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js?v=@(typeof(Radzen.Colors).Assembly.GetName().Version)"></script>
     <script src="_content/Syncfusion.Blazor/scripts/syncfusion-blazor.min.js" type="text/javascript"></script>
     <script src="disposeResources.js"></script>
+    <script>
+        window.registerDotNetObject = function (dotNetObject) {
+            window.dotNetObject = dotNetObject;
+        };
+
+        window.unregisterDotNetObject = function (dotNetObject) {
+            if (window.dotNetObject === dotNetObject) {
+                window.dotNetObject = null;
+            }
+        };
+
+        window.someJsFunction = function () {
+            if (window.dotNetObject) {
+                window.dotNetObject.invokeMethodAsync('SomeMethod').catch(error => {
+                    console.error("DotNetObjectReference has been disposed.");
+                });
+            }
+        };
+
+        window.addEventListener('beforeunload', function () {
+            if (window.dotNetObject) {
+                window.dotNetObject.invokeMethodAsync('Dispose');
+            }
+        });
+
+    </script>
     <script src="_framework/blazor.web.js"></script>
 </body>
 

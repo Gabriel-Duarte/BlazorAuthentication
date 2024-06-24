@@ -2,7 +2,14 @@
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<DashboardGerais/>
+<AuthorizeView>
+            <Authorized>
+        <h1>Welcome, @username</h1>
+    </Authorized>
+    <NotAuthorized>
+        <p>Não autorizado</p>
+    </NotAuthorized>
+</AuthorizeView>
 @code {
     private string username;
 

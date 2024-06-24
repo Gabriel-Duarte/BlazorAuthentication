@@ -1,5 +1,5 @@
 ﻿@page "/dashboard"
-@rendermode InteractiveServer
+@rendermode InteractiveAuto
 @inject IJSRuntime JSRuntime
 @using BlazorAuthentication.Client.Model
 @inject DialogService DialogService
@@ -262,29 +262,88 @@
 </div>
 
 @code {
-    private List<ChartData> data = new List<ChartData>
+    private List<ChartData> data;
+    private List<string> labelColors;
+    private List<Operator> operators;
+    private List<ChartData> unitizationData;
+    private List<ChartData> palletizationData;
+    private List<string> unitizationColors;
+    private List<string> palletizationColors;
+    private List<MetasData> metasData;
+    private List<Conformidades> conformidades;
+
+    protected override void OnInitialized()
+    {
+        data = new List<ChartData>
     {
         new ChartData { Category = "Não conformidade do fornecedor.", Value = 86 },
         new ChartData { Category = "Não conformidade de contagem", Value = 65 }
     };
-    private List<string> labelColors = new List<string>
+
+        labelColors = new List<string>
     {
         "blue",
         "green"
     };
+
+        operators = new List<Operator>
+    {
+        new Operator { Name = "Operador 1", WorkHours = "10:43:44", ConfHours = "09:07:47", PerfPallets = "21 pallets/h", AvgPallets = "78 pallets/h", DailyAccuracy = "82%", Accuracy = "34%" },
+        new Operator { Name = "Operador 2", WorkHours = "11:33:05", ConfHours = "06:34:16", PerfPallets = "43 pallets/h", AvgPallets = "6 pallets/h", DailyAccuracy = "77%", Accuracy = "25%" },
+        new Operator { Name = "Operador 3", WorkHours = "06:05:12", ConfHours = "04:51:24", PerfPallets = "17 pallets/h", AvgPallets = "26 pallets/h", DailyAccuracy = "95%", Accuracy = "60%" }
+    };
+
+        unitizationData = new List<ChartData>
+    {
+        new ChartData { Category = "Unitário", Value = 6 },
+        new ChartData { Category = "Misto/Solto", Value = 11 }
+    };
+
+        palletizationData = new List<ChartData>
+    {
+        new ChartData { Category = "Batido", Value = 7 },
+        new ChartData { Category = "Paletizada", Value = 13 },
+        new ChartData { Category = "Batido/Paletizado", Value = 14 }
+    };
+
+        unitizationColors = new List<string>
+    {
+        "#A64AC9", // Unitário
+        "#66BB6A"  // Misto/Solto
+    };
+
+        palletizationColors = new List<string>
+    {
+        "#A64AC9", // Batido
+        "#FFB74D", // Paletizada
+        "#7E57C2"  // Batido/Paletizado
+    };
+
+        metasData = new List<MetasData>
+    {
+        new MetasData { Category = "Recebidos", Meta = 19, Andamento = 25 },
+        new MetasData { Category = "Tempo de Trabalho", Meta = 20, Andamento = 15 },
+        new MetasData { Category = "Pallets", Meta = 10, Andamento = 15 }
+    };
+
+        conformidades = new List<Conformidades>
+    {
+          new Conformidades { Day = "10/03", Fornecedor = 19, Contagem = 14 },
+          new Conformidades { Day = "11/03", Fornecedor = 12, Contagem = 18 },
+          new Conformidades { Day = "12/03", Fornecedor = 9, Contagem = 23 },
+          new Conformidades { Day = "13/03", Fornecedor = 15, Contagem = 15 },
+          new Conformidades { Day = "14/03", Fornecedor = 10, Contagem = 5 },
+          new Conformidades { Day = "15/03", Fornecedor = 4, Contagem = 29 },
+    };
+
+    }
+
 
     public class ChartData
     {
         public string Category { get; set; }
         public int Value { get; set; }
     }
-
-    private List<Operator> operators = new List<Operator>
-    {
-        new Operator { Name = "Operador 1", WorkHours = "10:43:44", ConfHours = "09:07:47", PerfPallets = "21 pallets/h", AvgPallets = "78 pallets/h", DailyAccuracy = "82%", Accuracy = "34%" },
-        new Operator { Name = "Operador 2", WorkHours = "11:33:05", ConfHours = "06:34:16", PerfPallets = "43 pallets/h", AvgPallets = "6 pallets/h", DailyAccuracy = "77%", Accuracy = "25%" },
-        new Operator { Name = "Operador 3", WorkHours = "06:05:12", ConfHours = "04:51:24", PerfPallets = "17 pallets/h", AvgPallets = "26 pallets/h", DailyAccuracy = "95%", Accuracy = "60%" }
-    };
 
     public class Operator
     {
@@ -297,50 +356,6 @@
         public string Accuracy { get; set; }
     }
 
-    private List<ChartData> unitizationData = new List<ChartData>
-    {
-        new ChartData { Category = "Unitário", Value = 6 },
-        new ChartData { Category = "Misto/Solto", Value = 11 }
-    };
-
-    private List<ChartData> palletizationData = new List<ChartData>
-    {
-        new ChartData { Category = "Batido", Value = 7 },
-        new ChartData { Category = "Paletizada", Value = 13 },
-        new ChartData { Category = "Batido/Paletizado", Value = 14 }
-    };
-
-
-
-    private List<string> unitizationColors = new List<string>
-    {
-        "#A64AC9", // Unitário
-        "#66BB6A"  // Misto/Solto
-    };
-
-    private List<string> palletizationColors = new List<string>
-    {
-        "#A64AC9", // Batido
-        "#FFB74D", // Paletizada
-        "#7E57C2"  // Batido/Paletizado
-    };
-
-    private List<MetasData> metasData = new List<MetasData>
-    {
-        new MetasData { Category = "Recebidos", Meta = 19, Andamento = 25 },
-        new MetasData { Category = "Tempo de Trabalho", Meta = 20, Andamento = 15 },
-        new MetasData { Category = "Pallets", Meta = 10, Andamento = 15 }
-    };
-
-    private List<Conformidades> conformidades = new List<Conformidades>
-    {
-        new Conformidades { Day = "10/03", Fornecedor = 19, Contagem = 14 },
-        new Conformidades { Day = "11/03", Fornecedor = 12, Contagem = 18 },
-       new Conformidades { Day = "12/03", Fornecedor = 9, Contagem = 23 },
-        new Conformidades { Day = "13/03", Fornecedor = 15, Contagem = 15 },
-         new Conformidades { Day = "14/03", Fornecedor = 10, Contagem = 5 },
-          new Conformidades { Day = "15/03", Fornecedor = 4, Contagem = 29 },
-    };
 
     public class MetasData
     {
@@ -348,8 +363,6 @@
         public int Meta { get; set; }
         public int Andamento { get; set; }
     }
-
-
 
 
     public async Task OnConformidades()
@@ -369,6 +382,5 @@
                                                        });
 
     }
-
 
 }

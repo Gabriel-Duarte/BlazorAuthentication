@@ -1,0 +1,40 @@
+﻿@using BlazorAuthentication.Client.Model
+@inject DialogService DialogService
+@rendermode InteractiveAuto
+
+<RadzenCard>
+
+
+    <ApexChart TItem="Conformidades"
+               Title="" Height="300">
+
+        <ApexPointSeries TItem="Conformidades"
+                         Items="@conformidades"
+                         Name="Fornecedor"
+                         SeriesType="SeriesType.Bar"
+                         XValue="e => e.Day"
+                         YValue="e=> e.Fornecedor" />
+
+        <ApexPointSeries TItem="Conformidades"
+                         Items="@conformidades"
+                         Name="Contagem"
+                         SeriesType="SeriesType.Bar"
+                         XValue="e => e.Day"
+                         YValue="e=> e.Contagem" />
+    </ApexChart>
+
+</RadzenCard>
+<button class="btn btn-light" style="margin-left: auto; width: auto; max-width: 100%; height: 40px; padding: 10px 20px; border-radius: 10px; margin-top: 20px;" @onclick="Exit">
+    <i class="bi bi-arrow-return-left"></i> Voltar
+</button>
+@code {
+    [Parameter]
+    public List<Conformidades> conformidades { get; set; }
+
+    private void Exit()
+    {
+        DialogService.Close(null);
+    }
+
+
+}

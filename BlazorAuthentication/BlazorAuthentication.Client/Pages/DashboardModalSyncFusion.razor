@@ -1,7 +1,9 @@
-﻿
+﻿@rendermode InteractiveAuto
 @using BlazorAuthentication.Client.Model
+@using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Cards
 @using Syncfusion.Blazor.Charts
+@inject DialogService DialogService
 
 <SfCard>
     <SfChart>
@@ -15,16 +17,16 @@
             <ChartAxisLabelStyle Size="11px"></ChartAxisLabelStyle>
         </ChartPrimaryYAxis>
         <ChartSeriesCollection>
-            <ChartSeries DataSource="@conformidade" XName="Day" YName="Fornecedor" Name="Fornecedor" Fill="orange" Type="ChartSeriesType.Column">
+            <ChartSeries DataSource="@conformidades" XName="Day" YName="Fornecedor" Name="Fornecedor" Fill="orange" Type="ChartSeriesType.Column">
                 <ChartMarker>
-                    <ChartDataLabel Visible="true" Position="LabelPosition.Middle">
+                    <ChartDataLabel Visible="true" Position=" Syncfusion.Blazor.Charts.LabelPosition.Middle">
                         <ChartDataLabelFont Color="#FFFFFF"></ChartDataLabelFont>
                     </ChartDataLabel>
                 </ChartMarker>
             </ChartSeries>
-            <ChartSeries DataSource="@conformidade" XName="Day" YName="Contagem" Name="Contagem" Fill="blue" Type="ChartSeriesType.Column">
+            <ChartSeries DataSource="@conformidades" XName="Day" YName="Contagem" Name="Contagem" Fill="blue" Type="ChartSeriesType.Column">
                 <ChartMarker>
-                    <ChartDataLabel Visible="true" Position="LabelPosition.Middle">
+                    <ChartDataLabel Visible="true" Position="Syncfusion.Blazor.Charts.LabelPosition.Middle">
                         <ChartDataLabelFont Color="#FFFFFF"></ChartDataLabelFont>
                     </ChartDataLabel>
                 </ChartMarker>
@@ -32,25 +34,14 @@
         </ChartSeriesCollection>
     </SfChart>
 </SfCard>
-
+<SfButton CssClass="e-flat e-light" IconCss="e-icons e-keyboard-return" Content="Voltar" Width="auto" Height="40px" Style="margin-left: auto; max-width: 100%; padding: 10px 20px; border-radius: 10px; margin-top: 20px;" OnClick="@Exit">
+</SfButton>
 @code {
     [Parameter]
     public List<Conformidades> conformidades { get; set; }
-    private List<Conformidades> conformidade = new List<Conformidades>();
 
-    protected override void OnInitialized()
+    private void Exit()
     {
-        base.OnInitialized();
-        // Inicialize os dados aqui
-        conformidade = new List<Conformidades>
-        {
-            new Conformidades { Day = "10/03", Fornecedor = 19, Contagem = 14 },
-            new Conformidades { Day = "11/03", Fornecedor = 12, Contagem = 18 },
-            new Conformidades { Day = "12/03", Fornecedor = 9, Contagem = 23 },
-            new Conformidades { Day = "13/03", Fornecedor = 15, Contagem = 15 },
-            new Conformidades { Day = "14/03", Fornecedor = 10, Contagem = 5 },
-            new Conformidades { Day = "15/03", Fornecedor = 4, Contagem = 29 },
-        };
+        DialogService.Close(null);
     }
-
 }
