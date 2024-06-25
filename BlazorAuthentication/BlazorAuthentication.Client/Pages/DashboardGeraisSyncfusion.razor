@@ -411,7 +411,7 @@
         var parameter = new Dictionary<string, object>() {
                 { "conformidades", conformidades } };
 
-        var dialogResult = await DialogService.OpenAsync<DashboardModalSyncFusion>("Painel de Não Conformidades", parameter,
+        var dialogResult = await DialogService.OpenAsync<DashboardModal>("Painel de Não Conformidades", parameter,
                                                    new DialogOptions()
                                                        {
                                                            Width = ModalState.Medium,

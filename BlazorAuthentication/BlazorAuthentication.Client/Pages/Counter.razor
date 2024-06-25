@@ -1,7 +1,9 @@
 ﻿@page "/counter"
 @rendermode InteractiveAuto
+@using BlazorAuthentication.Client.Model
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject DialogService DialogService
 <PageTitle>Counter</PageTitle>
 
 <h1>Counter</h1>
@@ -19,6 +21,7 @@
     </NotAuthorized>
 </AuthorizeView>
 </CascadingAuthenticationState>
+<RadzenIcon Icon="assessment" Style="font-size: 24px;cursor: pointer; display: inline-block;" @onclick="OnConformidades" />
 @code {
     private int currentCount = 0;
     private string username;
@@ -38,6 +41,32 @@
                 StateHasChanged();
             }
         }
+    }
+    List<Conformidades> conformidades = new List<Conformidades>
+    {
+      new Conformidades { Day = "10/03", Fornecedor = 19, Contagem = 14 },
+      new Conformidades { Day = "11/03", Fornecedor = 12, Contagem = 18 },
+      new Conformidades { Day = "12/03", Fornecedor = 9, Contagem = 23 },
+      new Conformidades { Day = "13/03", Fornecedor = 15, Contagem = 15 },
+      new Conformidades { Day = "14/03", Fornecedor = 10, Contagem = 5 },
+      new Conformidades { Day = "15/03", Fornecedor = 4, Contagem = 29 },
+    };
+    public async Task OnConformidades()
+    {
+        var parameter = new Dictionary<string, object>() {
+                { "conformidades", conformidades } };
+
+        var dialogResult = await DialogService.OpenAsync<DashboardModal>("Painel de Não Conformidades", parameter,
+                                                   new DialogOptions()
+                                                       {
+                                                           Width = ModalState.Medium,
+                                                           CloseDialogOnEsc = ModalState.CloseDialogOnEsc,
+                                                           Draggable = ModalState.Draggable,
+                                                           Resizable = ModalState.Resizable,
+                                                           Height = "53%",
+                                                           ShowClose = ModalState.ShowClose
+                                                       });
+
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

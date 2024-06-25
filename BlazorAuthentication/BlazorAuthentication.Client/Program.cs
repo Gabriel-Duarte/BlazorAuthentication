@@ -6,6 +6,7 @@ using BlazorAuthentication.Client.Service.Interface;
 using BlazorAuthentication.Client.Service.Service;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using MudBlazor.Services;
 using Radzen;
 using Syncfusion.Blazor;
 
@@ -31,6 +32,7 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IFilialService, FilialService>();
 builder.Services.AddSyncfusionBlazor();
 builder.Services.AddRadzenComponents();
+builder.Services.AddMudServices();
 builder.Services.AddCascadingAuthenticationState();
 
 builder.AddBlazorCookies();

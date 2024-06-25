@@ -9,6 +9,7 @@ using BlazorAuthentication.Service.Authentication;
 using BlazorAuthentication.Service.Interfaces;
 using BlazorAuthentication.Service.Services;
 using Microsoft.AspNetCore.Components.Authorization;
+using MudBlazor.Services;
 using Radzen;
 using Syncfusion.Blazor;
 
@@ -33,6 +34,7 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IFilialService, FilialService>();
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NCaF5cXmZCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWXlfeHVVRmBZVERwXko=");
 builder.Services.AddSyncfusionBlazor();
+builder.Services.AddMudServices();
 var apiMobilizeIOTInventario = builder.Configuration["ApiMobilizeIOTInventario"];
 var apiMobilizeOauth = builder.Configuration["ApiMobilizeOauth"];
 builder.Services.AddHttpClient("ApiMobilizeOauth", options =>

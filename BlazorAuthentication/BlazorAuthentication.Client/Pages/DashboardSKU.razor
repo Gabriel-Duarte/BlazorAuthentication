@@ -1,0 +1,288 @@
+﻿@page "/dashboardSku"
+@rendermode InteractiveAuto
+
+
+@using Radzen
+@using Radzen.Blazor
+
+<div class="col-md-12 d-flex align-items-stretch">
+    <RadzenCard class="flex-fill" Style="padding: 20px;">
+        <div class="row">
+            <div class="col-md-4">
+                <h5 style="font-weight: bold; margin-bottom: 20px;">Tipos de Unitização</h5>
+                <RadzenChart Style="height: 200px;">
+                    <RadzenDonutSeries Data="@unitizationData" CategoryProperty="Category" ValueProperty="Value" />
+                </RadzenChart>
+                <div style="margin-top: 10px;">
+                    @foreach (var data in unitizationData)
+                    {
+                        <div><strong>@data.Value% </strong>@data.Category</div>
+                    }
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h5 style="font-weight: bold; margin-bottom: 20px;">Tipos de Paletização</h5>
+                <RadzenChart Style="height: 200px;">
+                    <RadzenDonutSeries Data="@palletizationData" CategoryProperty="Category" ValueProperty="Value" />
+                </RadzenChart>
+                <div style="margin-top: 10px;">
+                    @foreach (var data in palletizationData)
+                    {
+                        <div><strong>@data.Value% </strong>@data.Category</div>
+                    }
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 style="font-weight: bold; margin-bottom: 20px;">Top 5 Produtos Recebidos</h5>
+                    <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Outlined" Text="Ver todos" Click="@(args => OnViewAllClick())" />
+                </div>
+                <RadzenGrid Data="@productsData" TItem="Product" Style="margin-top: 10px;">
+                    <Columns>
+                        <RadzenGridColumn TItem="Product" Property="Volume" Title="VOLUME" Width="100px" />
+                        <RadzenGridColumn TItem="Product" Property="SKU" Title="SKU" Width="150px" />
+                        <RadzenGridColumn TItem="Product" Property="Name" Title="PRODUTO" Width="200px" />
+                    </Columns>
+                </RadzenGrid>
+            </div>
+        </div>
+    </RadzenCard>
+</div>
+<div class="row mt-4">
+    <div class="col-md-12 d-flex align-items-stretch">
+        <RadzenCard class="flex-fill" Style="padding: 20px; height: 150px;">
+            <h6 style ="font-weight: bold; margin-bottom: 20px;">Unitizado</h6>
+            <div class="d-flex justify-content-between align-items-center">
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Pallets (SKU)/Hora</div>
+                    <div style="font-size: 24px; font-weight: bold;">283 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">SKU / Carga</div>
+                    <div style="font-size: 24px; font-weight: bold;">40</div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">NC</div>
+                    <div style="font-size: 24px; font-weight: bold;">60 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Tempo de Conferência</div>
+                    <div style="font-size: 24px; font-weight: bold;">02h55 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: red; background-color: #fce8e6;">v1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Lead Time</div>
+                    <div style="font-size: 24px; font-weight: bold;">08h21 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="margin-left: 20px;">
+                    <RadzenButton Text="Ver gráfico" Icon="bar_chart" Click="@(args => OnViewChartClick())" Style="background-color: #007bff; border-color: #007bff; color: white;" />
+                </div>
+            </div>
+        </RadzenCard>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12 d-flex align-items-stretch">
+        <RadzenCard class="flex-fill" Style="padding: 20px; height: 150px;">
+            <h6 style="font-weight: bold; margin-bottom: 20px;">Mista/Solta</h6>
+            <div class="d-flex justify-content-between align-items-center">
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Pallets (SKU)/Hora</div>
+                    <div style="font-size: 24px; font-weight: bold;">636 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">SKU / Carga</div>
+                    <div style="font-size: 24px; font-weight: bold;">91</div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">NC</div>
+                    <div style="font-size: 24px; font-weight: bold;">86 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Tempo de Conferência</div>
+                    <div style="font-size: 24px; font-weight: bold;">03h39 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: red; background-color: #fce8e6;">v1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Lead Time</div>
+                    <div style="font-size: 24px; font-weight: bold;">03h51 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="margin-left: 20px;">
+                    <RadzenButton Text="Ver gráfico" Icon="bar_chart" Click="@(args => OnViewChartClick())" Style="background-color: #007bff; border-color: #007bff; color: white;" />
+                </div>
+            </div>
+        </RadzenCard>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12 d-flex align-items-stretch">
+        <RadzenCard class="flex-fill" Style="padding: 20px; height: 150px;">
+            <h6 style="font-weight: bold; margin-bottom: 20px;">Troca</h6>
+            <div class="d-flex justify-content-between align-items-center">
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Pallets (SKU)/Hora</div>
+                    <div style="font-size: 24px; font-weight: bold;">167 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">SKU / Carga</div>
+                    <div style="font-size: 24px; font-weight: bold;">94</div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">NC</div>
+                    <div style="font-size: 24px; font-weight: bold;">48 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Tempo de Conferência</div>
+                    <div style="font-size: 24px; font-weight: bold;">05h33 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: red; background-color: #fce8e6;">v1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Lead Time</div>
+                    <div style="font-size: 24px; font-weight: bold;">05h09 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="margin-left: 20px;">
+                    <RadzenButton Text="Ver gráfico" Icon="bar_chart" Click="@(args => OnViewChartClick())" Style="background-color: #007bff; border-color: #007bff; color: white;" />
+                </div>
+            </div>
+        </RadzenCard>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-md-12 d-flex align-items-stretch">
+        <RadzenCard class="flex-fill" Style="padding: 20px; height: 150px;">
+            <h6 style="font-weight: bold; margin-bottom: 20px;">Batido</h6>
+            <div class="d-flex justify-content-between align-items-center">
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Pallets (SKU)/Hora</div>
+                    <div style="font-size: 24px; font-weight: bold;">571 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">SKU / Carga</div>
+                    <div style="font-size: 24px; font-weight: bold;">54</div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">NC</div>
+                    <div style="font-size: 24px; font-weight: bold;">37 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Tempo de Conferência</div>
+                    <div style="font-size: 24px; font-weight: bold;">07h22 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: red; background-color: #fce8e6;">v1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Lead Time</div>
+                    <div style="font-size: 24px; font-weight: bold;">02h19 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="margin-left: 20px;">
+                    <RadzenButton Text="Ver gráfico" Icon="bar_chart" Click="@(args => OnViewChartClick())" Style="background-color: #007bff; border-color: #007bff; color: white;" />
+                </div>
+            </div>
+        </RadzenCard>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-md-12 d-flex align-items-stretch">
+        <RadzenCard class="flex-fill" Style="padding: 20px; height: 150px;">
+            <h6 style="font-weight: bold; margin-bottom: 20px;">Paletizado</h6>
+            <div class="d-flex justify-content-between align-items-center">
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Pallets (SKU)/Hora</div>
+                    <div style="font-size: 24px; font-weight: bold;">333 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">SKU / Carga</div>
+                    <div style="font-size: 24px; font-weight: bold;">35</div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">NC</div>
+                    <div style="font-size: 24px; font-weight: bold;">37 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Tempo de Conferência</div>
+                    <div style="font-size: 24px; font-weight: bold;">11h29 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: red; background-color: #fce8e6;">v1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Lead Time</div>
+                    <div style="font-size: 24px; font-weight: bold;">06h31 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="margin-left: 20px;">
+                    <RadzenButton Text="Ver gráfico" Icon="bar_chart" Click="@(args => OnViewChartClick())" Style="background-color: #007bff; border-color: #007bff; color: white;" />
+                </div>
+            </div>
+        </RadzenCard>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-md-12 d-flex align-items-stretch mb-4">
+        <RadzenCard class="flex-fill" Style="padding: 20px; height: 150px;">
+            <h6 style="font-weight: bold; margin-bottom: 20px;">Batido e Paletizado (Carga com produtos e ambas as formas)</h6>
+            <div class="d-flex justify-content-between align-items-center">
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Pallets (SKU)/Hora</div>
+                    <div style="font-size: 24px; font-weight: bold;">513 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">SKU / Carga</div>
+                    <div style="font-size: 24px; font-weight: bold;">60</div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">NC</div>
+                    <div style="font-size: 24px; font-weight: bold;">64 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Tempo de Conferência</div>
+                    <div style="font-size: 24px; font-weight: bold;">04h32 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: red; background-color: #fce8e6;">v1000%</span></div>
+                </div>
+                <div style="flex: 1; text-align: center;">
+                    <div style="font-size: 14px; color: #6c757d;">Lead Time</div>
+                    <div style="font-size: 24px; font-weight: bold;">12h35 <span style="font-size: 12px; padding: 2px 4px; border-radius: 4px; color: green; background-color: #e6f4ea;">^1000%</span></div>
+                </div>
+                <div style="margin-left: 20px;">
+                    <RadzenButton Text="Ver gráfico" Icon="bar_chart" Click="@(args => OnViewChartClick())" Style="background-color: #007bff; border-color: #007bff; color: white;" />
+                </div>
+            </div>
+        </RadzenCard>
+    </div>
+</div>
+@code {
+    private List<PieData> unitizationData = new List<PieData>
+    {
+        new PieData { Category = "Unitizado", Value = 19 },
+        new PieData { Category = "Mista/Solta", Value = 34 }
+    };
+
+    private List<PieData> palletizationData = new List<PieData>
+    {
+        new PieData { Category = "Batido", Value = 42 },
+        new PieData { Category = "Paletizado", Value = 32 },
+        new PieData { Category = "Batido e Paletizado", Value = 55 }
+    };
+
+    private List<Product> productsData = new List<Product>
+    {
+        new Product { Volume = "9260 un", SKU = "599804902", Name = "Produto 1" },
+        new Product { Volume = "3242 un", SKU = "663184399", Name = "Produto 2" },
+        new Product { Volume = "9729 un", SKU = "817216959", Name = "Produto 3" }
+    };
+
+    private void OnViewAllClick()
+    {
+        // Implement your logic to view all products
+    }
+
+    private void OnViewChartClick()
+    {
+        // Implement your logic to view the chart
+    }
+
+    public class PieData
+    {
+        public string Category { get; set; }
+        public int Value { get; set; }
+    }
+
+    public class Product
+    {
+        public string Volume { get; set; }
+        public string SKU { get; set; }
+        public string Name { get; set; }
+    }
+}

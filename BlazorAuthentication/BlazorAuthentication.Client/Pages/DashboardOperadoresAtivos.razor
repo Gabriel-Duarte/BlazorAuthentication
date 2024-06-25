@@ -1,0 +1,184 @@
+﻿@page "/dashboardOperadoresAtivos"
+@rendermode InteractiveAuto
+@using BlazorAuthentication.Client
+
+
+<div class="col-md-12 d-flex align-items-stretch">
+    <RadzenCard class="flex-fill" Style="padding: 20px;">
+        <h5>Operadores em Atividade</h5>
+        <RadzenDataGrid Data="@operatorsData" TItem="OperatorData">
+            <Columns>
+                <RadzenDataGridColumn TItem="OperatorData" Property="Name" Title="Nome" />
+                <RadzenDataGridColumn TItem="OperatorData" Property="HoursWorked" Title="H. Trab" />
+                <RadzenDataGridColumn TItem="OperatorData" Property="HoursInConf" Title="H. em Conf" />
+                <RadzenDataGridColumn TItem="OperatorData" Property="ConfTimePercentage" Title="% Tempo Conf." />
+                <RadzenDataGridColumn TItem="OperatorData" Property="PerfPallet" Title="Perf. Pallet" />
+                <RadzenDataGridColumn TItem="OperatorData" Property="AvgPerf" Title="Media Perf." />
+                <RadzenDataGridColumn TItem="OperatorData" Property="DayAccuracy" Title="Acur. Dia" />
+                <RadzenDataGridColumn TItem="OperatorData" Property="AvgAccuracy" Title="Media Acur." />
+                <RadzenDataGridColumn TItem="OperatorData" Property="Volumes" Title="Volumes" />
+            </Columns>
+        </RadzenDataGrid>
+    </RadzenCard>
+</div>
+
+
+<div class="row mt-4">
+    <div class="col-md-6 d-flex flex-column">
+        <RadzenCard class="flex-fill" Style="padding: 20px;">
+            <h5>Tela de Acompanhamento</h5>
+            <RadzenChart Style="height: 300px;">
+                <RadzenCategoryAxis />
+                <RadzenValueAxis Min="0" />
+                <RadzenColumnSeries Data=@operatorsData CategoryProperty="Name" Title="NC" ValueProperty="NonConformities" Fill="orange" />
+                <RadzenColumnSeries Data=@operatorsData CategoryProperty="Name" Title="Pallets/h" ValueProperty="PalletsPerHour" Fill="blue" />
+                <RadzenColumnSeries Data=@operatorsData CategoryProperty="Name" Title="Total de Conferências" ValueProperty="TotalConferences" Fill="purple" />
+                <RadzenColumnOptions Radius="5" />
+            </RadzenChart>
+        </RadzenCard>
+    </div>
+    <div class="col-md-6 d-flex flex-column">
+        <RadzenCard class="flex-fill" Style="padding: 20px;">
+            <h5>Horas trabalhadas vs Horas conferidas</h5>
+            <div class="d-flex align-items-center">
+                <div class="legenda" style="flex: 1;">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="circle" style="background-color: #3357FF; width: 12px; height: 12px; border-radius: 50%; margin-right: 12px;"></div>
+                        <div>
+                            <div>Horas trabalhadas</div>
+                            <div style="font-size: 1.5rem;"><strong>59h</strong></div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="circle" style="background-color: #FF5733; width: 12px; height: 12px; border-radius: 50%; margin-right: 12px;"></div>
+                        <div>
+                            <div>Horas conferidas</div>
+                            <div style="font-size: 1.5rem;"><strong>13h</strong></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="flex: 2;">
+                    <RadzenChart Style="height: 300px;">
+                        <RadzenDonutSeries Data="@workedVsConfData" CategoryProperty="Category" ValueProperty="Value" Fills="@unitizationColors" />
+                    </RadzenChart>
+                </div>
+            </div>
+        </RadzenCard>
+
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12 d-flex align-items-stretch">
+        <RadzenCard class="flex-fill" Style="padding: 20px;">
+            <h5>Operadores em Atividade</h5>
+            <RadzenChart Style="height: 300px;">
+                <RadzenAreaSeries Data="@performanceData" CategoryProperty="Date" ValueProperty="Operator1" Title="Operador 1" />
+                <RadzenAreaSeries Data="@performanceData" CategoryProperty="Date" ValueProperty="Operator2" Title="Operador 2" />
+
+                <RadzenValueAxis Min="0" Max="20" />
+                <RadzenLegend />
+            </RadzenChart>
+        </RadzenCard>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-md-12 d-flex align-items-stretch mb-4">
+        <RadzenCard class="flex-fill" Style="padding: 20px;">
+            <h5>Operadores Inativos</h5>
+            <RadzenDataGrid Data="@operators" TItem="Operator"  ShowPagingSummary="false" PageSize="50">
+                <Columns>
+                    <RadzenDataGridColumn TItem="Operator" Property="Name" Title="NOME" />
+                    <RadzenDataGridColumn TItem="Operator" Property="HoursWorked" Title="H.TRAB" FormatString="{0:hh\\:mm\\:ss}" />
+                    <RadzenDataGridColumn TItem="Operator" Property="HoursInConf" Title="H. EM CONF" FormatString="{0:hh\\:mm\\:ss}" />
+                    <RadzenDataGridColumn TItem="Operator" Property="ConfTimePercentage" Title="% TEMPO CONF." />
+                    <RadzenDataGridColumn TItem="Operator" Property="PerfPallet" Title="PERF. PALLET" />
+                    <RadzenDataGridColumn TItem="Operator" Property="AvgPerf" Title="MEDIA PERF." />
+                    <RadzenDataGridColumn TItem="Operator" Property="DayAccuracy" Title="ACUR. DIA" />
+                    <RadzenDataGridColumn TItem="Operator" Property="AvgAccuracy" Title="MEDIA ACUR." />
+                    <RadzenDataGridColumn TItem="Operator" Property="Volumes" Title="VOLUMES" />
+                </Columns>
+            </RadzenDataGrid>
+        </RadzenCard>
+    </div>
+</div>
+
+
+@code {
+    public List<OperatorData> operatorsData = new List<OperatorData>
+    {
+        new OperatorData { Name = "Operador 1", HoursWorked = new TimeSpan(10, 43, 44), HoursInConf = new TimeSpan(9, 7, 47), ConfTimePercentage = 77, PerfPallet = 21, AvgPerf = 78, DayAccuracy = 82, AvgAccuracy = 90, Volumes = 11, NonConformities = 20, PalletsPerHour = 30, TotalConferences = 100 },
+        new OperatorData { Name = "Operador 2", HoursWorked = new TimeSpan(11, 33, 5), HoursInConf = new TimeSpan(6, 34, 16), ConfTimePercentage = 63, PerfPallet = 43, AvgPerf = 6, DayAccuracy = 77, AvgAccuracy = 45, Volumes = 26, NonConformities = 15, PalletsPerHour = 20, TotalConferences = 80 },
+        new OperatorData { Name = "Operador 3", HoursWorked = new TimeSpan(6, 5, 12), HoursInConf = new TimeSpan(4, 51, 24), ConfTimePercentage = 58, PerfPallet = 17, AvgPerf = 26, DayAccuracy = 95, AvgAccuracy = 26, Volumes = 90, NonConformities = 10, PalletsPerHour = 25, TotalConferences = 70 }
+    };
+
+    public List<WorkedVsConfData> workedVsConfData = new List<WorkedVsConfData>
+    {
+        new WorkedVsConfData { Category = "Horas trabalhadas", Value = 59 },
+        new WorkedVsConfData { Category = "Horas conferidas", Value = 13 }
+    };
+
+    public string[] unitizationColors = { "#FF5733", "#33FF57", "#3357FF", "#F0E68C" };
+
+    public class OperatorData
+    {
+        public string Name { get; set; }
+        public TimeSpan HoursWorked { get; set; }
+        public TimeSpan HoursInConf { get; set; }
+        public int ConfTimePercentage { get; set; }
+        public int PerfPallet { get; set; }
+        public int AvgPerf { get; set; }
+        public int DayAccuracy { get; set; }
+        public int AvgAccuracy { get; set; }
+        public int Volumes { get; set; }
+        public int NonConformities { get; set; }
+        public int PalletsPerHour { get; set; }
+        public int TotalConferences { get; set; }
+    }
+
+    public class WorkedVsConfData
+    {
+        public string Category { get; set; }
+        public int Value { get; set; }
+    }
+
+    public class PerformanceData
+    {
+        public string Date { get; set; }
+        public int Operator1 { get; set; }
+        public int Operator2 { get; set; }
+    }
+
+    public List<PerformanceData> performanceData = new List<PerformanceData>
+    {
+        new PerformanceData { Date = "22/12", Operator1 = 7, Operator2 = 14 },
+        new PerformanceData { Date = "23/12", Operator1 = 5, Operator2 = 11 },
+        new PerformanceData { Date = "24/12", Operator1 = 10, Operator2 = 15 },
+        new PerformanceData { Date = "25/12", Operator1 = 12, Operator2 = 18 },
+        new PerformanceData { Date = "26/12", Operator1 = 11, Operator2 = 14 },
+        new PerformanceData { Date = "27/12", Operator1 = 9, Operator2 = 10 },
+        new PerformanceData { Date = "28/12", Operator1 = 6, Operator2 = 8 },
+        new PerformanceData { Date = "29/12", Operator1 = 15, Operator2 = 12 },
+        new PerformanceData { Date = "30/12", Operator1 = 13, Operator2 = 9 },
+        new PerformanceData { Date = "31/12", Operator1 = 16, Operator2 = 11 },
+    };
+    public List<Operator> operators = new List<Operator>
+    {
+        new Operator { Name = "Operador 1", HoursWorked = "10:43:44", HoursInConf = "09:07:47", ConfTimePercentage = 77, PerfPallet = "21 pallets/h", AvgPerf = "78 pallets/h", DayAccuracy = 82, AvgAccuracy = 90, Volumes = 11 },
+        new Operator { Name = "Operador 2", HoursWorked = "11:33:05", HoursInConf = "06:34:16", ConfTimePercentage = 63, PerfPallet = "43 pallets/h", AvgPerf = "6 pallets/h", DayAccuracy = 77, AvgAccuracy = 45, Volumes = 26 },
+        new Operator { Name = "Operador 3", HoursWorked = "06:05:12", HoursInConf = "04:51:24", ConfTimePercentage = 58, PerfPallet = "17 pallets/h", AvgPerf = "26 pallets/h", DayAccuracy = 95, AvgAccuracy = 26, Volumes = 90 }
+    };
+
+    public class Operator
+    {
+        public string Name { get; set; }
+        public string HoursWorked { get; set; }
+        public string HoursInConf { get; set; }
+        public int ConfTimePercentage { get; set; }
+        public string PerfPallet { get; set; }
+        public string AvgPerf { get; set; }
+        public int DayAccuracy { get; set; }
+        public int AvgAccuracy { get; set; }
+        public int Volumes { get; set; }
+    }
+}
